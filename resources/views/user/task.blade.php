@@ -1,143 +1,149 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mt-4">
+<div class="row mb-4 align-items-center">
+    <div class="col">
+        <h3 class="fw-bold mb-1">Task Management</h3>
+        <p class="text-muted mb-0">Track and manage project tasks and deadlines.</p>
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-primary d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#addTaskModal">
+            <i data-lucide="plus-circle" style="width: 18px;"></i>
+            <span>Add New Task</span>
+        </button>
+    </div>
+</div>
 
-    <!-- Page Header -->
-    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addTaskModal">
-        Add New Task
-    </button>
-
-    <!-- Task Table -->
-    <div class="card">
-        <div class="card-body">
-            <table class="table table-bordered table-hover text-center">
-                <thead class="table-dark">
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table mb-0">
+                <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Task Title</th>
-                        <th>Client Name</th>
-                        <th>Task Description</th>
+                        <th class="ps-4">Task Info</th>
+                        <th>Client</th>
                         <th>Status</th>
-                        <th width="180">Action</th> <!-- Action Column -->
+                        <th class="text-end pe-4">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-
                     <tr>
-                        <td>1</td>
-                        <td>Website Design</td>
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light rounded p-2 me-3">
+                                    <i data-lucide="layout" class="text-primary" style="width: 20px;"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 fw-semibold">Website Design</h6>
+                                    <small class="text-muted">Create homepage UI</small>
+                                </div>
+                            </div>
+                        </td>
                         <td>Ali Khan</td>
-                        <td>Create homepage and dashboard UI</td>
-                        <td><span class="badge bg-secondary">Pending</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-warning">Edit</button>
-                            <button class="btn btn-sm btn-danger">Delete</button>
+                        <td><span class="badge bg-light text-secondary border">Pending</span></td>
+                        <td class="text-end pe-4">
+                            <div class="d-flex justify-content-end gap-2">
+                                <button class="btn btn-sm btn-outline-primary"><i data-lucide="eye" style="width: 14px;"></i></button>
+                                <button class="btn btn-sm btn-outline-danger"><i data-lucide="trash-2" style="width: 14px;"></i></button>
+                            </div>
                         </td>
                     </tr>
-
                     <tr>
-                        <td>2</td>
-                        <td>API Integration</td>
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light rounded p-2 me-3">
+                                    <i data-lucide="code" class="text-primary" style="width: 20px;"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 fw-semibold">API Integration</h6>
+                                    <small class="text-muted">Payment gateway</small>
+                                </div>
+                            </div>
+                        </td>
                         <td>Ahmed Raza</td>
-                        <td>Integrate payment gateway API</td>
-                        <td><span class="badge bg-primary">Active</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-warning">Edit</button>
-                            <button class="btn btn-sm btn-danger">Delete</button>
+                        <td><span class="badge bg-primary-subtle text-primary border border-primary-subtle">Active</span></td>
+                        <td class="text-end pe-4">
+                            <div class="d-flex justify-content-end gap-2">
+                                <button class="btn btn-sm btn-outline-primary"><i data-lucide="eye" style="width: 14px;"></i></button>
+                                <button class="btn btn-sm btn-outline-danger"><i data-lucide="trash-2" style="width: 14px;"></i></button>
+                            </div>
                         </td>
                     </tr>
-
                     <tr>
-                        <td>3</td>
-                        <td>Bug Fixing</td>
-                        <td>Sara Ali</td>
-                        <td>Resolve login authentication issues</td>
-                        <td><span class="badge bg-danger">Rejected</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-warning">Edit</button>
-                            <button class="btn btn-sm btn-danger">Delete</button>
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light rounded p-2 me-3">
+                                    <i data-lucide="check-circle" class="text-primary" style="width: 20px;"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 fw-semibold">Project Delivery</h6>
+                                    <small class="text-muted">Final deployment</small>
+                                </div>
+                            </div>
                         </td>
-                    </tr>
-
-                    <tr>
-                        <td>4</td>
-                        <td>Testing Phase</td>
-                        <td>Usman Shah</td>
-                        <td>Complete system testing</td>
-                        <td><span class="badge bg-info">Passed</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-warning">Edit</button>
-                            <button class="btn btn-sm btn-danger">Delete</button>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>5</td>
-                        <td>Project Delivery</td>
                         <td>Hassan Ali</td>
-                        <td>Final deployment and delivery</td>
-                        <td><span class="badge bg-success">Completed</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-warning">Edit</button>
-                            <button class="btn btn-sm btn-danger">Delete</button>
+                        <td><span class="badge bg-success-subtle text-success border border-success-subtle">Completed</span></td>
+                        <td class="text-end pe-4">
+                            <div class="d-flex justify-content-end gap-2">
+                                <button class="btn btn-sm btn-outline-primary"><i data-lucide="eye" style="width: 14px;"></i></button>
+                                <button class="btn btn-sm btn-outline-danger"><i data-lucide="trash-2" style="width: 14px;"></i></button>
+                            </div>
                         </td>
                     </tr>
-
                 </tbody>
             </table>
         </div>
     </div>
-
 </div>
 
 <!-- Add Task Modal -->
 <div class="modal fade" id="addTaskModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
-
             <div class="modal-header">
-                <h5 class="modal-title">Add New Task</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title fw-bold">Add New Task</h5>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
             </div>
-
-            <div class="modal-body">
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Task Title</label>
-                        <input type="text" class="form-control" placeholder="Enter task title">
+            <div class="modal-body p-4">
+                <form id="addTaskForm">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Task Title</label>
+                            <input type="text" class="form-control" placeholder="e.g. Design System">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Client Name</label>
+                            <input type="text" class="form-control" placeholder="e.g. John Doe">
+                        </div>
                     </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Client Name</label>
-                        <input type="text" class="form-control" placeholder="Enter client name">
+                    <div class="mb-3">
+                        <label class="form-label">Task Description</label>
+                        <textarea class="form-control" rows="3" placeholder="Describe the task details..."></textarea>
                     </div>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Task Description</label>
-                    <textarea class="form-control" rows="3" placeholder="Enter task description"></textarea>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Status</label>
-                    <select class="form-select">
-                        <option value="0">Pending</option>
-                        <option value="1">Active</option>
-                        <option value="2">Rejected</option>
-                        <option value="3">Passed</option>
-                        <option value="4">Completed</option>
-                    </select>
-                </div>
-
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Priority</label>
+                            <select class="form-select">
+                                <option>Low</option>
+                                <option selected>Medium</option>
+                                <option>High</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Status</label>
+                            <select class="form-select">
+                                <option value="0">Pending</option>
+                                <option value="1">Active</option>
+                                <option value="2">Completed</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
             </div>
-
             <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button class="btn btn-success" id="saveTaskBtn">Save Task</button>
+                <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary px-4" id="saveTaskBtn">Create Task</button>
             </div>
-
         </div>
     </div>
 </div>
@@ -145,18 +151,24 @@
 
 @section('scripts')
 <script>
-    const addTaskModal = document.getElementById('addTaskModal');
+    document.addEventListener('DOMContentLoaded', function() {
+        lucide.createIcons();
 
-    // Clear inputs when modal opens
-    addTaskModal.addEventListener('show.bs.modal', function () {
-        addTaskModal.querySelectorAll('input, textarea').forEach(el => el.value = '');
-        addTaskModal.querySelector('select').value = '0';
-    });
+        const saveTaskBtn = document.getElementById('saveTaskBtn');
+        const addTaskModal = new bootstrap.Modal(document.getElementById('addTaskModal'));
 
-    // Save button (static)
-    document.getElementById('saveTaskBtn').addEventListener('click', function () {
-        alert('Task added successfully (Static Demo)');
-        bootstrap.Modal.getInstance(addTaskModal).hide();
+        saveTaskBtn.addEventListener('click', function() {
+            saveTaskBtn.disabled = true;
+            saveTaskBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating...';
+            
+            setTimeout(() => {
+                alert('Task added successfully!');
+                saveTaskBtn.disabled = false;
+                saveTaskBtn.innerHTML = 'Create Task';
+                addTaskModal.hide();
+                document.getElementById('addTaskForm').reset();
+            }, 1000);
+        });
     });
 </script>
 @endsection

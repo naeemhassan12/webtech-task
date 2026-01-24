@@ -1,23 +1,43 @@
-<div class="sidebar p-3">
-    <h4 class="text-center py-3">Admin Dashboard</h4>
-    <ul class="nav flex-column">
-        <li class="nav-item mb-2">
-            <a href="{{ route('dashboard.create') }}" class="nav-link"><i class="fas fa-home me-2"></i>Home</a>
-        </li>
-        <li class="nav-item mb-2">
-            <a href="{{ route('user.create') }}" class="nav-link">
-                <i class="fas fa-user me-2"></i>Users
-            </a>
+<div class="sidebar d-flex flex-column h-100">
+    <div class="p-4">
+        <h5 class="fw-bold mb-0 text-primary">WebTech</h5>
+        <small class="text-muted">Admin Panel</small>
+    </div>
+    
+    <div class="flex-grow-1 px-3">
+        <ul class="nav flex-column gap-1">
+            <li class="nav-item">
+                <a href="{{ route('dashboard.create') }}" class="nav-link {{ request()->routeIs('dashboard.create') ? 'active' : '' }}">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item mt-2">
+                <small class="text-uppercase text-muted fw-semibold ps-3 mb-2 d-block" style="font-size: 0.7rem;">Management</small>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('user.create') }}" class="nav-link {{ request()->routeIs('user.create') ? 'active' : '' }}">
+                    <i data-lucide="users"></i>
+                    <span>Users</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('user.show') }}" class="nav-link {{ request()->routeIs('user.show') ? 'active' : '' }}">
+                    <i data-lucide="check-square"></i>
+                    <span>Tasks</span>
+                </a>
+            </li>
+        </ul>
+    </div>
 
-        </li>
-        <li class="nav-item mb-2">
-            <a href="{{ route('user.show') }}" class="nav-link"><i class="fas fa-box me-2"></i>Task</a>
-        </li>
-        {{-- <li class="nav-item mb-2">
-            <a href="#" class="nav-link"><i class="fas fa-chart-line me-2"></i>Analytics</a>
-        </li>
-        <li class="nav-item mb-2">
-            <a href="#" class="nav-link"><i class="fas fa-cog me-2"></i>Settings</a>
-        </li> --}}
-    </ul>
+    <div class="p-4 border-top">
+        <ul class="nav flex-column px-3 gap-1">
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i data-lucide="settings"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+        </ul>
+    </div>
 </div>

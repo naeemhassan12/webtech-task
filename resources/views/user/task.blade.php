@@ -21,7 +21,8 @@
                 <thead>
                     <tr>
                         <th class="ps-4">Task Info</th>
-                        <th>Client</th>
+                        <th>Client_Name</th>
+                        <th>TaskDescription</th>
                         <th>Status</th>
                         <th class="text-end pe-4">Actions</th>
                     </tr>
@@ -40,10 +41,11 @@
                             </div>
                         </td>
                         <td>Ali Khan</td>
+                        <td>Project Description</td>
                         <td><span class="badge bg-light text-secondary border">Pending</span></td>
                         <td class="text-end pe-4">
                             <div class="d-flex justify-content-end gap-2">
-                                <button class="btn btn-sm btn-outline-primary"><i data-lucide="eye" style="width: 14px;"></i></button>
+                                <button class="btn btn-sm btn-outline-primary"><i data-lucide="edit-2" style="width: 14px;"></i></button>
                                 <button class="btn btn-sm btn-outline-danger"><i data-lucide="trash-2" style="width: 14px;"></i></button>
                             </div>
                         </td>
@@ -61,10 +63,11 @@
                             </div>
                         </td>
                         <td>Ahmed Raza</td>
+                        <td>Api Project Description</td>
                         <td><span class="badge bg-primary-subtle text-primary border border-primary-subtle">Active</span></td>
                         <td class="text-end pe-4">
                             <div class="d-flex justify-content-end gap-2">
-                                <button class="btn btn-sm btn-outline-primary"><i data-lucide="eye" style="width: 14px;"></i></button>
+                                <button class="btn btn-sm btn-outline-primary"><i data-lucide="edit-2" style="width: 14px;"></i></button>
                                 <button class="btn btn-sm btn-outline-danger"><i data-lucide="trash-2" style="width: 14px;"></i></button>
                             </div>
                         </td>
@@ -82,10 +85,11 @@
                             </div>
                         </td>
                         <td>Hassan Ali</td>
+                        <td>Project Delivery Description</td>
                         <td><span class="badge bg-success-subtle text-success border border-success-subtle">Completed</span></td>
                         <td class="text-end pe-4">
                             <div class="d-flex justify-content-end gap-2">
-                                <button class="btn btn-sm btn-outline-primary"><i data-lucide="eye" style="width: 14px;"></i></button>
+                                <button class="btn btn-sm btn-outline-primary"><i data-lucide="edit-2" style="width: 14px;"></i></button>
                                 <button class="btn btn-sm btn-outline-danger"><i data-lucide="trash-2" style="width: 14px;"></i></button>
                             </div>
                         </td>
@@ -160,7 +164,7 @@
         saveTaskBtn.addEventListener('click', function() {
             saveTaskBtn.disabled = true;
             saveTaskBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating...';
-            
+
             setTimeout(() => {
                 alert('Task added successfully!');
                 saveTaskBtn.disabled = false;

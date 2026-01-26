@@ -3,7 +3,7 @@
         <h5 class="fw-bold mb-0 text-primary">WebTech</h5>
         <small class="text-muted">Admin Panel</small>
     </div>
-    
+
     <div class="flex-grow-1 px-3">
         <ul class="nav flex-column gap-1">
             <li class="nav-item">
@@ -27,6 +27,15 @@
                     <span>Tasks</span>
                 </a>
             </li>
+
+                {{-- <li class="nav-item">
+                <a href="{{ route('user.task_user') }}" class="nav-link {{ request()->routeIs('user.task_user') ? 'active' : '' }}">
+                    <i data-lucide="check-square"></i>
+                    <span>UserTasks</span> --}}
+                </a>
+            </li>
+
+
         </ul>
     </div>
 

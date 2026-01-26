@@ -105,25 +105,26 @@
                 <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-4">
-                <form id="addUserForm">
+                <form action ="{{ route('user.store') }}" id="addUserForm">
+                    @csrf
                     <div class="mb-3">
                         <label class="form-label">Full Name</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0"><i data-lucide="user" style="width: 16px;"></i></span>
-                            <input type="text" class="form-control border-start-0" placeholder="Enter full name">
+                            <input type="text" name="username" class="form-control border-start-0" placeholder="Enter full name">
                         </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Email Address</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0"><i data-lucide="mail" style="width: 16px;"></i></span>
-                            <input type="email" class="form-control border-start-0" placeholder="Enter email address">
+                            <input type="email" name="email" class="form-control border-start-0" placeholder="Enter email address">
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6 text-start">
                             <label class="form-label">Username</label>
-                            <input type="text" class="form-control" placeholder="username">
+                            <input type="text" name="name" class="form-control" placeholder="username">
                         </div>
                         <div class="col-md-6 text-start">
                             <label class="form-label">Role</label>
@@ -138,7 +139,7 @@
                         <label class="form-label">Password</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light border-end-0"><i data-lucide="lock" style="width: 16px;"></i></span>
-                            <input type="password" class="form-control border-start-0" placeholder="Create a password">
+                            <input type="password" name="password" class="form-control border-start-0" placeholder="Create a password">
                         </div>
                         <small class="text-muted">Must be at least 8 characters</small>
                     </div>
@@ -165,7 +166,7 @@
             // Static demo effect
             saveUserBtn.disabled = true;
             saveUserBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating...';
-            
+
             setTimeout(() => {
                 alert('User created successfully!');
                 saveUserBtn.disabled = false;

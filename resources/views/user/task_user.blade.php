@@ -1,1 +1,1 @@
-@extends('user.task')
+@extends('layouts.app')

@@ -13,11 +13,12 @@ Route::get('/dashboard', [DashboardController::class, 'create'])->name('dashboar
 
 Route::get('/user', [UserController::class, 'create'])->name('user.create');
 Route::get('/user/create', [UserController::class, 'create'])->name('user.create');
-Route::get('/user/store', [UserController::class, 'store'])->name('user.store');
-Route::get('/user/index', [UserController::class, 'create'])->name('user.index');
-Route::get('/user/edit/{id}', [UserController::class, 'create'])->name('user.edit');
-Route::get('/user/update{id}', [UserController::class, 'create'])->name('user.update');
-Route::get('/user/delete/{id}', [UserController::class, 'create'])->name('user.delete');
+Route::post('/user/store', [UserController::class, 'store'])->name('user.store');
+Route::get('/user/index', [UserController::class, 'index'])->name('user.index');
+Route::get('/user/{id}/edit', [UserController::class, 'edit'])->name('user.edit');
+Route::put('/user/update/{id}', [UserController::class, 'update'])->name('user.update');
+Route::delete('/user/delete/{id}', [UserController::class, 'destroy'])->name('user.delete');
+//Route::delete('/user/delete/{id}', [UserController::class, 'destroy']);
 
 
 

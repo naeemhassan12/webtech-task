@@ -438,7 +438,7 @@
                 $.ajax({
                     url: "/tasks/" + taskId,
                     type: "POST",
-                    data: form.serialize(),
+                    data: form.serialize() + '&_method=PUT',
                     success: function(response) {
                         let task = response.task;
                         let statusText = taskStatuses[task.status] ?? 'Unknown';

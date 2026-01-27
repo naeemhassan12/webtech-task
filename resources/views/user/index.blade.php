@@ -50,7 +50,7 @@
                                         $roleColors = [
                                             'superadmin' => 'danger',
                                             'admin' => 'warning',
-                                            'user' => 'info'
+                                            'user' => 'info',
                                         ];
                                         $roleColor = $roleColors[$user->role] ?? 'secondary';
                                     @endphp
@@ -111,10 +111,7 @@
                             </div>
                         </div>
                         <div class="row mb-3">
-                            {{-- <div class="col-md-6 text-start">
-                                <label class="form-label">Username</label>
-                                <input type="text" name="username" class="form-control" placeholder="username">
-                            </div> --}}
+
                             <div class="col-md-12 text-start">
                                 <label class="form-label">Role</label>
                                 <select class="form-select" name="role">
@@ -272,7 +269,11 @@
                 data: form.serialize(),
                 success: function(response) {
                     // Add new row to table
-                    let roleColorMap = { 'superadmin': 'danger', 'admin': 'warning', 'user': 'info' };
+                    let roleColorMap = {
+                        'superadmin': 'danger',
+                        'admin': 'warning',
+                        'user': 'info'
+                    };
                     let roleColor = roleColorMap[response.user.role] || 'secondary';
 
                     let newRow = `
@@ -309,12 +310,16 @@
                     renderIcons();
 
                     showToast(response.message, 'success');
-                    btn.prop('disabled', false).html('<i data-lucide="user-plus" style="width: 14px;"></i><span>Create User</span>');
+                    btn.prop('disabled', false).html(
+                        '<i data-lucide="user-plus" style="width: 14px;"></i><span>Create User</span>'
+                        );
                     $('#addUserModal').modal('hide');
                     form[0].reset();
                 },
                 error: function(xhr) {
-                    btn.prop('disabled', false).html('<i data-lucide="user-plus" style="width: 14px;"></i><span>Create User</span>');
+                    btn.prop('disabled', false).html(
+                        '<i data-lucide="user-plus" style="width: 14px;"></i><span>Create User</span>'
+                        );
                     if (xhr.status === 422) {
                         let errors = xhr.responseJSON.errors;
                         let errorMsg = Object.values(errors).flat().join('\n');
@@ -413,9 +418,15 @@
                             </div>
                         `);
                         row.find('td:eq(1)').text(user.email);
-                        let roleColorMap = { 'superadmin': 'danger', 'admin': 'warning', 'user': 'info' };
+                        let roleColorMap = {
+                            'superadmin': 'danger',
+                            'admin': 'warning',
+                            'user': 'info'
+                        };
                         let roleColor = roleColorMap[user.role] || 'secondary';
-                        row.find('td:eq(2)').html(`<span class="badge bg-${roleColor}">${user.role.charAt(0).toUpperCase() + user.role.slice(1)}</span>`);
+                        row.find('td:eq(2)').html(
+                            `<span class="badge bg-${roleColor}">${user.role.charAt(0).toUpperCase() + user.role.slice(1)}</span>`
+                            );
 
                         renderIcons();
 
@@ -424,13 +435,18 @@
                             document.getElementById('editUserModal')
                         ).hide();
 
-                        btn.prop('disabled', false).html('<i data-lucide="save" style="width: 14px;"></i><span>Save Changes</span>');
+                        btn.prop('disabled', false).html(
+                            '<i data-lucide="save" style="width: 14px;"></i><span>Save Changes</span>'
+                            );
                         showToast(response.message ?? 'User updated successfully!', 'success');
                     },
                     error: function(xhr) {
-                        btn.prop('disabled', false).html('<i data-lucide="save" style="width: 14px;"></i><span>Save Changes</span>');
+                        btn.prop('disabled', false).html(
+                            '<i data-lucide="save" style="width: 14px;"></i><span>Save Changes</span>'
+                            );
                         if (xhr.responseJSON && xhr.responseJSON.errors) {
-                            let errorMsg = Object.values(xhr.responseJSON.errors).flat().join('\n');
+                            let errorMsg = Object.values(xhr.responseJSON.errors).flat().join(
+                                '\n');
                             showToast(errorMsg, 'danger');
                         } else {
                             showToast('Failed to update user', 'danger');
@@ -485,5 +501,4 @@
             renderIcons();
         });
     </script>
-
 @endsection

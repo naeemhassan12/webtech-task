@@ -77,7 +77,7 @@
             <p class="lead text-muted mb-5 max-w-2xl mx-auto">WebTech provides the ultimate dashboard experience for managing employees, clients, and projects with precision and ease.</p>
             <div class="d-flex justify-content-center gap-3">
                 <a href="{{ route('dashboard.create') }}" class="btn btn-primary btn-lg px-5">Go to Dashboard</a>
-                <a href="{{ route('user.show') }}" class="btn btn-light btn-lg px-5 border shadow-sm">View Tasks</a>
+                <a href="{{ route('user.create') }}" class="btn btn-light btn-lg px-5 border shadow-sm">View Tasks</a>
             </div>
         </div>
     </header>

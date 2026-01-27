@@ -22,7 +22,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('user.show') }}" class="nav-link {{ request()->routeIs('user.show') ? 'active' : '' }}">
+                <a href="{{ route('tasks.create') }}" class="nav-link {{ request()->routeIs('tasks.create') ? 'active' : '' }}">
                     <i data-lucide="check-square"></i>
                     <span>Tasks</span>
                 </a>
@@ -31,9 +31,9 @@
                 {{-- <li class="nav-item">
                 <a href="{{ route('user.task_user') }}" class="nav-link {{ request()->routeIs('user.task_user') ? 'active' : '' }}">
                     <i data-lucide="check-square"></i>
-                    <span>UserTasks</span> --}}
+                    <span>UserTasks</span>
                 </a>
-            </li>
+            </li> --}}
 
 
         </ul>

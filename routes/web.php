@@ -4,13 +4,13 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TaskController;
-use App\Http\Controllers\UserTaskController;
+//use App\Http\Controllers\UserTaskController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/dashboard', [DashboardController::class, 'create'])->name('dashboard.create');
 
 // Route::resource('user', UserController::class);
-
+// route users table
 Route::get('/user', [UserController::class, 'create'])->name('user.create');
 Route::get('/user/create', [UserController::class, 'create'])->name('user.create');
 Route::post('/user/store', [UserController::class, 'store'])->name('user.store');
@@ -22,18 +22,23 @@ Route::delete('/user/delete/{id}', [UserController::class, 'destroy'])->name('us
 
 
 
+// routes task tables
+Route::get('/task', [TaskController::class, 'create'])->name('tasks.create');
+Route::post('/task/store', [TaskController::class,'store'])->name('tasks.store');
+
+Route::get('/task/index', [TaskController::class, 'index'])->name('tasks.index');
+Route::get('/tasks/{id}/edit', [TaskController::class, 'edit']);
+Route::post('/tasks/{id}', [TaskController::class, 'update']);
+Route::delete('/tasks/{id}', [TaskController::class, 'destroy'])->name('tasks.destroy');
 
 
-Route::get('/task', [TaskController::class, 'show'])->name('user.show');
 
 
 
 
-
-//Route::get('/userTask', [UserTaskController::class,'UserTask'])->name('user.task_user');
-// Route::get('/',function(){
-//     return view('welcome');
-// });
+ Route::get('/',function(){
+     return view('welcome');
+ });
 
 // Route::get('/', [DashboardController::class, 'create'])
 //     ->middleware(['auth', 'verified'])

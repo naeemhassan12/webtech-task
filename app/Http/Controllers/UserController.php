@@ -1,10 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 use App\Models\User;
-
 
 class UserController extends Controller
 {
@@ -18,16 +16,12 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-
-
         $validated = $request->validate([
             'name' => 'required|max:255',
             'email'    => 'required|email|max:255',
             'password' => 'required|min:6|max:255',
             'role'     => 'required|in:superadmin,admin,user',
         ]);
-
-
 
         $user = User::create([
             'name' => $validated['name'],
@@ -37,17 +31,14 @@ class UserController extends Controller
             'role' => $validated['role']
         ]);
 
-
         return response()->json([
             'message' => 'User created successfully!',
             'user' => $user
         ]);
     }
 
-
     public function edit($id)
     {
-
         $user_datas = User::findOrFail($id); // fetch user or fail
         return response()->json([
             'user' => $user_datas
@@ -57,14 +48,12 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
-
         $validated = $request->validate([
             'name' => 'required|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $id,
             'password' => 'nullable|min:6|max:255',
             'role' => 'required|in:superadmin,admin,user',
         ]);
-
         $user->name = $validated['name'];
         $user->email = $validated['email'];
         $user->role = $validated['role'];

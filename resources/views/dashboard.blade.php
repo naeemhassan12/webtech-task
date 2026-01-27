@@ -86,7 +86,7 @@
                 <h5 class="fw-bold mb-4">Quick Actions</h5>
                 <div class="d-flex flex-wrap gap-2">
                     <a href="{{ route('user.create') }}" class="btn btn-outline-primary px-4 py-2">Manage Users</a>
-                    <a href="{{ route('user.show') }}" class="btn btn-outline-primary px-4 py-2">Track Tasks</a>
+                    <a href="{{ route('user.create') }}" class="btn btn-outline-primary px-4 py-2">Track Tasks</a>
                     <button class="btn btn-outline-secondary px-4 py-2">System Settings</button>
                     <button class="btn btn-outline-secondary px-4 py-2">View Logs</button>
                 </div>

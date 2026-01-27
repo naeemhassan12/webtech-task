@@ -8,7 +8,7 @@
         </div>
         <div class="col-auto">
             <button class="btn btn-primary d-flex align-items-center gap-2" data-bs-toggle="modal"
-                data-bs-target="#addUserModal">
+                data-bs-target="#addUserModal" id="addUserBtnTop">
                 <i data-lucide="user-plus" style="width: 18px;"></i>
                 <span>Add New User</span>
             </button>
@@ -45,8 +45,18 @@
                                 </td>
                                 <td>{{ $user->email }}</td>
 
-                                <td>{{ $user->role }}</td>
-                                <td>{{ $user->created_at }}</td>
+                                <td>
+                                    @php
+                                        $roleColors = [
+                                            'superadmin' => 'danger',
+                                            'admin' => 'warning',
+                                            'user' => 'info'
+                                        ];
+                                        $roleColor = $roleColors[$user->role] ?? 'secondary';
+                                    @endphp
+                                    <span class="badge bg-{{ $roleColor }}">{{ ucfirst($user->role) }}</span>
+                                </td>
+                                <td>{{ $user->created_at->format('M d, Y') }}</td>
                                 <td class="text-end pe-4">
                                     <div class="d-flex justify-content-end gap-2">
                                         <button class="btn btn-sm btn-primary editUserBtn" data-id="{{ $user->id }}">
@@ -193,89 +203,186 @@
 
 @section('scripts')
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+
+    <!-- Toast Notification Helper -->
+    <script>
+        function showToast(message, type = 'success') {
+            const toastHTML = `
+                <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0"
+                     role="alert" aria-live="assertive" aria-atomic="true" style="min-width: 300px;">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+            `;
+            const toastContainer = document.createElement('div');
+            toastContainer.className = 'position-fixed top-0 end-0 p-3';
+            toastContainer.style.zIndex = '9999';
+            toastContainer.innerHTML = toastHTML;
+            document.body.appendChild(toastContainer);
+
+            const toast = new bootstrap.Toast(toastContainer.querySelector('.toast'));
+            toast.show();
+
+            setTimeout(() => toastContainer.remove(), 3000);
+        }
+
+        function renderIcons() {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+    </script>
+
+    <!-- AJAX Setup -->
     <script>
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('input[name="_token"]').val()
             }
         });
+    </script>
 
+    <!-- Create User AJAX -->
+    <script>
         $('#saveUserBtn').click(function() {
             let btn = $(this);
             let form = $('#addUserForm');
 
+            // Validation
+            let name = form.find('input[name="name"]').val().trim();
+            let email = form.find('input[name="email"]').val().trim();
+            let password = form.find('input[name="password"]').val().trim();
+
+            if (!name || !email || !password) {
+                showToast('Please fill all required fields', 'danger');
+                return;
+            }
+
             btn.prop('disabled', true).html(
-                '<span class="spinner-border spinner-border-sm me-2"></span>Creating...');
+                '<span class="spinner-border spinner-border-sm me-2"></span><span>Creating...</span>');
 
             $.ajax({
                 url: '{{ route('user.store') }}',
                 type: 'POST',
                 data: form.serialize(),
                 success: function(response) {
-                    alert(response.message);
-                    btn.prop('disabled', false).html('Create User');
+                    // Add new row to table
+                    let roleColorMap = { 'superadmin': 'danger', 'admin': 'warning', 'user': 'info' };
+                    let roleColor = roleColorMap[response.user.role] || 'secondary';
+
+                    let newRow = `
+                        <tr id="userRow${response.user.id}">
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3"
+                                        style="width: 40px; height: 40px;">
+                                        <i data-lucide="user" class="text-primary" style="width: 20px;"></i>
+                                    </div>
+                                    <div>
+                                        <h6 class="mb-0 fw-semibold">${response.user.name}</h6>
+                                        <small class="text-muted">Administrator</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>${response.user.email}</td>
+                            <td><span class="badge bg-${roleColor}">${response.user.role.charAt(0).toUpperCase() + response.user.role.slice(1)}</span></td>
+                            <td>${new Date(response.user.created_at).toLocaleDateString()}</td>
+                            <td class="text-end pe-4">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <button class="btn btn-sm btn-primary editUserBtn" data-id="${response.user.id}">
+                                        <i data-lucide="edit-2" style="width: 14px;"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger deleteUserBtn" data-id="${response.user.id}">
+                                        <i data-lucide="trash-2" style="width: 14px;"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+
+                    $('table tbody').prepend(newRow);
+                    renderIcons();
+
+                    showToast(response.message, 'success');
+                    btn.prop('disabled', false).html('<i data-lucide="user-plus" style="width: 14px;"></i><span>Create User</span>');
                     $('#addUserModal').modal('hide');
                     form[0].reset();
                 },
                 error: function(xhr) {
-                    console.log(xhr.responseText); // check exact error
-                    btn.prop('disabled', false).html('Create User');
+                    btn.prop('disabled', false).html('<i data-lucide="user-plus" style="width: 14px;"></i><span>Create User</span>');
                     if (xhr.status === 422) {
                         let errors = xhr.responseJSON.errors;
-                        let errorMsg = '';
-                        $.each(errors, function(key, val) {
-                            errorMsg += val + '\n';
-                        });
-                        alert(errorMsg);
+                        let errorMsg = Object.values(errors).flat().join('\n');
+                        showToast(errorMsg, 'danger');
                     } else {
-                        alert('Something went wrong. Try again!');
+                        showToast('Something went wrong. Try again!', 'danger');
                     }
                 }
             });
         });
-
-        // edit modal f
     </script>
 
-
+    <!-- Edit User AJAX -->
     <script>
         $(document).on('click', '.editUserBtn', function() {
-            let userId = $(this).data('id');
+            let btn = $(this);
+            let userId = btn.data('id');
+
+            btn.prop('disabled', true).html(
+                '<span class="spinner-border spinner-border-sm"></span>');
 
             $.ajax({
                 url: '/user/' + userId + '/edit',
                 type: 'GET',
                 dataType: 'json',
                 success: function(response) {
-
-                    console.log(response); // DEBUG
-
                     $('#editUserId').val(response.user.id);
                     $('#editUserName').val(response.user.name);
                     $('#editUserEmail').val(response.user.email);
                     $('#editUserRole').val(response.user.role);
                     $('#editUserPassword').val('');
 
+                    btn.prop('disabled', false).html(
+                        '<i data-lucide="edit-2" style="width: 14px;"></i>');
+                    renderIcons();
+
                     // Bootstrap 5 modal
                     let modal = new bootstrap.Modal(document.getElementById('editUserModal'));
                     modal.show();
                 },
                 error: function(xhr) {
-                    console.error(xhr.responseText);
+                    btn.prop('disabled', false).html(
+                        '<i data-lucide="edit-2" style="width: 14px;"></i>');
+                    showToast('Failed to load user data', 'danger');
                 }
             });
         });
     </script>
 
-
-
+    <!-- Update User AJAX -->
     <script>
         $(document).ready(function() {
-
             $('#updateUserBtn').on('click', function(e) {
                 e.preventDefault();
 
+                let btn = $(this);
                 let userId = $('#editUserId').val();
+                let name = $('#editUserName').val().trim();
+                let email = $('#editUserEmail').val().trim();
+                let role = $('#editUserRole').val();
+
+                if (!name || !email) {
+                    showToast('Please fill all required fields', 'danger');
+                    return;
+                }
+
+                btn.prop('disabled', true).html(
+                    '<span class="spinner-border spinner-border-sm me-2"></span><span>Saving...</span>');
 
                 $.ajax({
                     url: '/user/update/' + userId,
@@ -283,82 +390,100 @@
                     data: {
                         _token: $('input[name="_token"]').val(),
                         _method: 'PUT',
-                        name: $('#editUserName').val(),
-                        email: $('#editUserEmail').val(),
-                        role: $('#editUserRole').val(),
+                        name: name,
+                        email: email,
+                        role: role,
                         password: $('#editUserPassword').val()
                     },
                     success: function(response) {
-
                         let user = response.user;
                         let row = $('#userRow' + user.id);
 
-                        // 🔥 Update table instantly
-                        row.find('td:eq(0)').text(user.name);
+                        // Update table row with icons
+                        row.find('td:eq(0)').html(`
+                            <div class="d-flex align-items-center">
+                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3"
+                                    style="width: 40px; height: 40px;">
+                                    <i data-lucide="user" class="text-primary" style="width: 20px;"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 fw-semibold">${user.name}</h6>
+                                    <small class="text-muted">Administrator</small>
+                                </div>
+                            </div>
+                        `);
                         row.find('td:eq(1)').text(user.email);
-                        row.find('td:eq(2)').text(user.role);
+                        let roleColorMap = { 'superadmin': 'danger', 'admin': 'warning', 'user': 'info' };
+                        let roleColor = roleColorMap[user.role] || 'secondary';
+                        row.find('td:eq(2)').html(`<span class="badge bg-${roleColor}">${user.role.charAt(0).toUpperCase() + user.role.slice(1)}</span>`);
 
-                        // Close modal (Bootstrap 5)
+                        renderIcons();
+
+                        // Close modal
                         bootstrap.Modal.getInstance(
                             document.getElementById('editUserModal')
                         ).hide();
 
-                        // ✅ Success message
-                        alert(response.message ?? 'User updated successfully!');
+                        btn.prop('disabled', false).html('<i data-lucide="save" style="width: 14px;"></i><span>Save Changes</span>');
+                        showToast(response.message ?? 'User updated successfully!', 'success');
                     },
                     error: function(xhr) {
+                        btn.prop('disabled', false).html('<i data-lucide="save" style="width: 14px;"></i><span>Save Changes</span>');
                         if (xhr.responseJSON && xhr.responseJSON.errors) {
-                            let msg = '';
-                            $.each(xhr.responseJSON.errors, function(key, value) {
-                                msg += value + '\n';
-                            });
-                            alert(msg);
+                            let errorMsg = Object.values(xhr.responseJSON.errors).flat().join('\n');
+                            showToast(errorMsg, 'danger');
                         } else {
-                            console.error(xhr.responseText);
+                            showToast('Failed to update user', 'danger');
                         }
                     }
                 });
             });
-
         });
     </script>
 
+    <!-- Delete User AJAX -->
+    <script>
+        $(document).ready(function() {
+            $(document).on('click', '.deleteUserBtn', function() {
+                let btn = $(this);
+                let userId = btn.data('id');
 
-<script>
-$(document).ready(function () {
+                if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+                    return;
+                }
 
-    $(document).on('click', '.deleteUserBtn', function () {
+                btn.prop('disabled', true).html(
+                    '<span class="spinner-border spinner-border-sm"></span>');
 
-        let userId = $(this).data('id');
-
-        if (!confirm('Are you sure you want to delete this user?')) {
-            return;
-        }
-
-        $.ajax({
-            url: '/user/delete/' + userId,
-            type: 'POST',
-            data: {
-                _token: $('input[name="_token"]').val(),
-                _method: 'DELETE'
-            },
-            success: function (response) {
-
-                // 🔥 Remove row instantly
-                $('#userRow' + userId).fadeOut(300, function () {
-                    $(this).remove();
+                $.ajax({
+                    url: '/user/delete/' + userId,
+                    type: 'POST',
+                    data: {
+                        _token: $('input[name="_token"]').val(),
+                        _method: 'DELETE'
+                    },
+                    success: function(response) {
+                        // Remove row with animation
+                        $('#userRow' + userId).fadeOut(300, function() {
+                            $(this).remove();
+                            showToast(response.message, 'success');
+                        });
+                    },
+                    error: function(xhr) {
+                        btn.prop('disabled', false).html(
+                            '<i data-lucide="trash-2" style="width: 14px;"></i>');
+                        showToast('Failed to delete user', 'danger');
+                    }
                 });
-
-                alert(response.message);
-            },
-            error: function (xhr) {
-                console.error(xhr.responseText);
-                alert('Failed to delete user');
-            }
+            });
         });
-    });
+    </script>
 
-});
-</script>
+    <!-- Initialize Lucide Icons on page load -->
+    <script>
+        $(document).ready(function() {
+            renderIcons();
+        });
+    </script>
 
 @endsection

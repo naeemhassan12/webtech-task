@@ -107,7 +107,7 @@
                         </div>
                         <div class="row g-3">
 
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <label class="form-label">Status</label>
                                 <select class="form-select" name="task_status">
                                     @foreach ($task_datas as $index => $task_data)
@@ -128,55 +128,7 @@
 
 
     <!-- Edit Task Modal -->
-    {{-- <div class="modal fade" id="editTaskModal" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Task</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editTaskForm">
-                        @csrf
-                        @method('PUT')
-                        <input type="hidden" id="editTaskId" name="task_id">
-
-                        <div class="mb-3">
-                            <label>Task Title</label>
-                            <input type="text" id="editTasksTitle" name="tasksTitle" class="form-control">
-                        </div>
-
-                        <div class="mb-3">
-                            <label>Client Name</label>
-                            <input type="text" id="editClientsName" name="clientsName" class="form-control">
-                        </div>
-
-                        <div class="mb-3">
-                            <label>Task Description</label>
-                            <textarea id="editTasksDescription" name="TasksDescription" class="form-control" rows="3"></textarea>
-                        </div>
-
-                        <div class="row g-3">
-
-                            <div class="col-md-12">
-                                <label>Status</label>
-                                <select id="editStatus" name="status" class="form-select">
-                                    @foreach ($task_datas as $index => $task_data)
-                                        <option value="{{ $index }}">{{ $task_data }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="updateTaskBtn">Update Task</button>
-                </div>
-            </div>
-        </div>
-    </div>
-     --}}
+   
     <div class="modal fade" id="editTaskModal" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">

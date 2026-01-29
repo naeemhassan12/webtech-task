@@ -4,8 +4,14 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TaskController;
-//use App\Http\Controllers\UserTaskController;
+use App\Http\Controllers\UserTaskController;
+use App\Http\Controllers\PendingTaskController;
 use Illuminate\Support\Facades\Route;
+
+
+Route::get('/pending',[PendingTaskController::class, 'index'])->name('pending.index');
+Route::get('/task/{id}', [TaskController::class, 'show'])
+    ->name('task.show');
 
 Route::get('/dashboard', [DashboardController::class, 'create'])->name('dashboard.create');
 
@@ -20,8 +26,6 @@ Route::put('/user/update/{id}', [UserController::class, 'update'])->name('user.u
 Route::delete('/user/delete/{id}', [UserController::class, 'destroy'])->name('user.delete');
 //Route::delete('/user/delete/{id}', [UserController::class, 'destroy']);
 
-
-
 // routes task tables
 Route::get('/task', [TaskController::class, 'create'])->name('tasks.create');
 Route::post('/task/store', [TaskController::class,'store'])->name('tasks.store');
@@ -30,10 +34,6 @@ Route::get('/task/index', [TaskController::class, 'index'])->name('tasks.index')
 Route::get('/tasks/{id}/edit', [TaskController::class, 'edit']);
 Route::put('/tasks/{id}', [TaskController::class, 'update']);
 Route::delete('/tasks/{id}', [TaskController::class, 'destroy'])->name('tasks.destroy');
-
-
-
-
 
 
  Route::get('/',function(){

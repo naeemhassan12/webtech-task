@@ -10,7 +10,8 @@ class UserController extends Controller
     {
         $roles = config('roles');
         $users = User::all();
-        return view('user.index', compact('roles', 'users'));
+        return view('user.index', get_defined_vars());
+
     }
 
 

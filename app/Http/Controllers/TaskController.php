@@ -15,7 +15,7 @@ class TaskController extends Controller
         return view('task.index', compact('tasks', 'task_datas'));
     }
 
-    public function show() {}
+
 
     public function store(Request $request)
     {
@@ -80,5 +80,9 @@ public function destroy($id)
         'message' => 'Task deleted successfully!'
     ]);
 }
+
+
+
+
 
 }

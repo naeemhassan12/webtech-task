@@ -17,13 +17,13 @@ return new class extends Migration
             $table->string('task_title');
             $table->string('client_name');
             $table->text('description');
-            
             $table->tinyInteger('status')->default(0); // 0: Pending, 1: Active, 2: Completed
             $table->timestamps(); //
         });
-
-
     }
+
+    
+
 
 
     /**

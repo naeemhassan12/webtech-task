@@ -127,3 +127,37 @@
     </script>
 </body>
 </html> --}}
+<table class="table table-bordered table-hover align-middle">
+    <thead class="table-light">
+        <tr>
+            <th style="width: 20%;">Task ID</th>
+            <th style="width: 40%;">User ID</th>
+            <th style="width: 40%;">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>1</td>
+            <td>3</td>
+            <td>
+                <button class="btn btn-sm btn-outline-danger">Remove</button>
+            </td>
+        </tr>
+
+        <tr>
+            <td>1</td>
+            <td>4</td>
+            <td>
+                <button class="btn btn-sm btn-outline-danger">Remove</button>
+            </td>
+        </tr>
+
+        <tr>
+            <td>1</td>
+            <td>7</td>
+            <td>
+                <button class="btn btn-sm btn-outline-success">Add</button>
+            </td>
+        </tr>
+    </tbody>
+</table>

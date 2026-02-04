@@ -6,10 +6,27 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserTaskController;
 use App\Http\Controllers\PendingTaskController;
+use App\Http\Controllers\ActiveTaskController;
+use App\Http\Controllers\showUsersModal;
+use App\Http\Controllers\addMember;
+use App\Http\Controllers\removeMember;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\TaskUserController;
 
-Route::get('/pending',[PendingTaskController::class, 'index'])->name('pending.index');
+Route::get('/taskUsers', [TaskUserController::class, 'index'])->name('taskUser.index');
+
+
+Route::get('/pending/{id}', [PendingTaskController::class, 'index'])
+    ->name('pending.index');
+
+Route::get('/pending/{id}', [PendingTaskController::class, 'showUsersModal'])->name('pending.index');
+// active task route
+Route::get('/active/{id}', [ActiveTaskController::class, 'index'])->name('active.index');
+// active task routes fetch through id
+Route::get('/active/{id}', [ActiveTaskController::class, 'showUsersModal'])->name('active-task.index');
+
+//Route::get('/pending/{id}',[PendingTaskController::class, 'index'])->name('pending.index');
 Route::get('/task/{id}', [TaskController::class, 'show'])
     ->name('task.show');
 

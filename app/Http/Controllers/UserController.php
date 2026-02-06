@@ -8,6 +8,7 @@ class UserController extends Controller
 {
     public function create()
     {
+        
         $roles = config('roles');
         $users = User::all();
         return view('user.index', get_defined_vars());

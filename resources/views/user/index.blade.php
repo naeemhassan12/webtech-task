@@ -39,7 +39,7 @@
                                         </div>
                                         <div>
                                             <h6 class="mb-0 fw-semibold">{{ $user->name }}</h6>
-                                            <small class="text-muted">Administrator</small>
+                                            <small class="text-muted">{{ ucfirst($user->role) }}</small>
                                         </div>
                                     </div>
                                 </td>
@@ -286,7 +286,7 @@
                                     </div>
                                     <div>
                                         <h6 class="mb-0 fw-semibold">${response.user.name}</h6>
-                                        <small class="text-muted">Administrator</small>
+                                        <small class="text-muted">${response.user.role.charAt(0).toUpperCase() + response.user.role.slice(1)}</small>
                                     </div>
                                 </div>
                             </td>
@@ -413,7 +413,7 @@
                                 </div>
                                 <div>
                                     <h6 class="mb-0 fw-semibold">${user.name}</h6>
-                                    <small class="text-muted">Administrator</small>
+                                    <small class="text-muted">${user.role.charAt(0).toUpperCase() + user.role.slice(1)}</small>
                                 </div>
                             </div>
                         `);

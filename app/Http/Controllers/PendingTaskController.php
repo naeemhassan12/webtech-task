@@ -19,8 +19,26 @@ class PendingTaskController extends Controller
     {
         $pendingtasks = Task::findOrFail($id);
         $users = User::whereIn('role', ['admin','user'])->get();
-        $taskMembers = $pendingtask->members ?? [];
+        // Get IDs of users associated with this task
+        $taskMembers = $pendingtasks->users->pluck('id')->toArray();
         return view('pending.index', compact( 'pendingtasks', 'users','taskMembers'));
+    }
+
+    public function addMember($taskId, $userId)
+    {
+        $task = Task::findOrFail($taskId);
+        // Check if already exists to avoid duplicates (though syncWithoutDetaching or check is good)
+        if (!$task->users()->where('user_id', $userId)->exists()) {
+            $task->users()->attach($userId);
+        }
+        return response()->json(['success' => true, 'message' => 'Member added successfully']);
+    }
+
+    public function removeMember($taskId, $userId)
+    {
+        $task = Task::findOrFail($taskId);
+        $task->users()->detach($userId);
+        return response()->json(['success' => true, 'message' => 'Member removed successfully']);
     }
 
 

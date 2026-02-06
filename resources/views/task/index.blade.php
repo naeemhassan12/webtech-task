@@ -224,6 +224,20 @@
             };
             return colors[statusIndex] || 'bg-secondary';
         }
+
+        function refreshSidebar() {
+            $.ajax({
+                url: "{{ route('sidebar.updates') }}",
+                type: "GET",
+                success: function(response) {
+                    $('#sidebarPendingTasks').html(response.pendingHtml);
+                    $('#sidebarActiveTasks').html(response.activeHtml);
+                },
+                error: function() {
+                    console.error('Failed to refresh sidebar');
+                }
+            });
+        }
     </script>
 
     <!-- AJAX Setup -->
@@ -300,6 +314,7 @@
 
                         $('#taskTableBody').prepend(newRow);
                         renderIcons();
+                        refreshSidebar();
 
                         showToast(response.message, 'success');
                         btn.prop('disabled', false).html('<i data-lucide="plus-circle" style="width: 14px;"></i><span>Create Task</span>');
@@ -431,6 +446,7 @@
                         $('#taskRow' + taskId).replaceWith(row);
 
                         renderIcons();
+                        refreshSidebar();
 
                         // Close modal properly using Bootstrap API
                         const modal = bootstrap.Modal.getInstance(document.getElementById('editTaskModal'));
@@ -478,6 +494,7 @@
                     success: function(response) {
                         $('#taskRow' + taskId).fadeOut(300, function() {
                             $(this).remove();
+                            refreshSidebar();
                             showToast('Task deleted successfully!', 'success');
                         });
                     },

@@ -12,19 +12,17 @@ use App\Http\Controllers\addMember;
 use App\Http\Controllers\removeMember;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\TaskUserController;
-
-Route::get('/taskUsers', [TaskUserController::class, 'index'])->name('taskUser.index');
-
-
-Route::get('/pending/{id}', [PendingTaskController::class, 'index'])
-    ->name('pending.index');
 
 Route::get('/pending/{id}', [PendingTaskController::class, 'showUsersModal'])->name('pending.index');
+Route::post('/pending/{taskId}/add-member/{userId}', [PendingTaskController::class, 'addMember'])->name('task.addMember');
+Route::delete('/pending/{taskId}/remove-member/{userId}', [PendingTaskController::class, 'removeMember'])->name('task.removeMember');
+
 // active task route
 Route::get('/active/{id}', [ActiveTaskController::class, 'index'])->name('active.index');
 // active task routes fetch through id
-Route::get('/active/{id}', [ActiveTaskController::class, 'showUsersModal'])->name('active-task.index');
+Route::get('/active/{id}/manage', [ActiveTaskController::class, 'showUsersModal'])->name('active-task.index');
+Route::post('/active/{taskId}/add-member/{userId}', [ActiveTaskController::class, 'addMember'])->name('active.addMember');
+Route::delete('/active/{taskId}/remove-member/{userId}', [ActiveTaskController::class, 'removeMember'])->name('active.removeMember');
 
 //Route::get('/pending/{id}',[PendingTaskController::class, 'index'])->name('pending.index');
 Route::get('/task/{id}', [TaskController::class, 'show'])
@@ -51,6 +49,7 @@ Route::get('/task/index', [TaskController::class, 'index'])->name('tasks.index')
 Route::get('/tasks/{id}/edit', [TaskController::class, 'edit']);
 Route::put('/tasks/{id}', [TaskController::class, 'update']);
 Route::delete('/tasks/{id}', [TaskController::class, 'destroy'])->name('tasks.destroy');
+Route::get('/sidebar/updates', [TaskController::class, 'getSidebarUpdates'])->name('sidebar.updates');
 
 
  Route::get('/',function(){

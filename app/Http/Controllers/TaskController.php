@@ -71,15 +71,26 @@ class TaskController extends Controller
     ]);
 }
 
-public function destroy($id)
-{
-    $task = Task::findOrFail($id);
-    $task->delete();
+    public function destroy($id)
+    {
+        $task = Task::findOrFail($id);
+        $task->delete();
 
-    return response()->json([
-        'message' => 'Task deleted successfully!'
-    ]);
-}
+        return response()->json([
+            'message' => 'Task deleted successfully!'
+        ]);
+    }
+
+    public function getSidebarUpdates()
+    {
+        $pendingTasks = \App\Models\Task::where('status', 0)->get();
+        $activeTask = \App\Models\Task::where('status', 1)->get();
+
+        return response()->json([
+            'pendingHtml' => view('layouts.sidebar_tasks', ['tasks' => $pendingTasks, 'type' => 'pending'])->render(),
+            'activeHtml' => view('layouts.sidebar_tasks', ['tasks' => $activeTask, 'type' => 'active'])->render()
+        ]);
+    }
 
 
 

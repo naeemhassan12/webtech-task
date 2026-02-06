@@ -30,27 +30,29 @@
                 <small class="text-uppercase text-muted fw-semibold ps-3 mb-2 d-block"
                     style="font-size: 0.7rem;">Pending Tasks</small>
             </li>
-            @foreach ($pendingTasks as $task)
-                <li class="nav-item">
-                    <a href="{{ route('pending.index', $task->id) }}" class="nav-link d-flex align-items-center gap-1"
-                        title="{{ $task->task_title }} - {{ $task->client_name }}">
-                        <small
-                            style="
-                            color: chocolate;
-                            max-width: 160px;
-                            white-space: nowrap;
-                            overflow: hidden;
-                            text-overflow: ellipsis;
-                            display: inline-block;">
-                            {{ $task->task_title }} - {{ $task->client_name }}
-                        </small>
-
-                        <span class="badge bg-danger rounded-pill ms-auto">
-                            {{ $pendingTasks->count() }}
-                        </span>
-                    </a>
-                </li>
-            @endforeach
+            <div id="sidebarPendingTasks">
+                @foreach ($pendingTasks as $task)
+                    <li class="nav-item">
+                        <a href="{{ route('pending.index', $task->id) }}" class="nav-link d-flex align-items-center gap-1"
+                            title="{{ $task->task_title }} - {{ $task->client_name }}">
+                            <small
+                                style="
+                                color: chocolate;
+                                max-width: 160px;
+                                white-space: nowrap;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                                display: inline-block;">
+                                {{ $task->task_title }} - {{ $task->client_name }}
+                            </small>
+    
+                            <span class="badge bg-danger rounded-pill ms-auto">
+                                {{ $pendingTasks->count() }}
+                            </span>
+                        </a>
+                    </li>
+                @endforeach
+            </div>
 
 
             <li class="nav-item mt-2">
@@ -59,33 +61,35 @@
                 </small>
             </li>
 
-            @if ($activeTask->count() > 0)
-                @foreach ($activeTask as $task)
-                    <li class="nav-item">
-                        <a href="{{ route('active-task.index', $task->id) }}"
-                            class="nav-link d-flex align-items-center gap-1"
-                            title="{{ $task->task_title }} - {{ $task->client_name }}">
-
-                            <!-- Text (ellipsis applies here only) -->
-                            <small
-                                style="
-                                    max-width: 160px;
-                                    white-space: nowrap;
-                                    overflow: hidden;
-                                    text-overflow: ellipsis;
-                                    display: inline-block;
-                                ">
-                                {{ $task->task_title }} - {{ $task->client_name }}
-                            </small>
-
-                            <!-- Badge (always visible) -->
-                            <span class="badge bg-danger rounded-pill ms-auto">
-                                {{ $activeTask->count() }}
-                            </span>
-                        </a>
-                    </li>
-                @endforeach
-            @endif
+            <div id="sidebarActiveTasks">
+                @if ($activeTask->count() > 0)
+                    @foreach ($activeTask as $task)
+                        <li class="nav-item">
+                            <a href="{{ route('active-task.index', $task->id) }}"
+                                class="nav-link d-flex align-items-center gap-1"
+                                title="{{ $task->task_title }} - {{ $task->client_name }}">
+    
+                                <!-- Text (ellipsis applies here only) -->
+                                <small
+                                    style="
+                                        max-width: 160px;
+                                        white-space: nowrap;
+                                        overflow: hidden;
+                                        text-overflow: ellipsis;
+                                        display: inline-block;
+                                    ">
+                                    {{ $task->task_title }} - {{ $task->client_name }}
+                                </small>
+    
+                                <!-- Badge (always visible) -->
+                                <span class="badge bg-danger rounded-pill ms-auto">
+                                    {{ $activeTask->count() }}
+                                </span>
+                            </a>
+                        </li>
+                    @endforeach
+                @endif
+            </div>
 
         </ul>
     </div>

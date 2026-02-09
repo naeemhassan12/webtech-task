@@ -211,5 +211,153 @@
 
 
 
-   
+
+    <!-- Google Charts -->
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <style>
+        body {
+            background: #e5ddd5;
+        }
+
+        .chat-card {
+            max-width: 100%;
+            margin: 20px auto;
+            background: #f7f7f7;
+            border-radius: 15px;
+        }
+
+        .chat-header {
+            background: #34b7f1;
+            color: white;
+            padding: 15px;
+            border-radius: 15px 15px 0 0;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .chat-body {
+            height: 450px;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            padding: 10px 15px;
+            border-radius: 20px;
+            max-width: 75%;
+            word-wrap: break-word;
+        }
+
+        .sent {
+            background: #dcf8c6;
+            align-self: flex-end;
+        }
+
+        .received {
+            background: #fff;
+            align-self: flex-start;
+        }
+
+        .chart-bubble {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+
+        .input-group {
+            margin: 10px auto;
+            max-width: 97%;
+        }
+    </style>
+
+
+    <div class="chat-card shadow">
+        <div class="chat-header">
+             <strong>dashboard3</strong> | Client: <strong>mobin</strong>
+        </div>
+        <div class="chat-body" id="chatBody"></div>
+    </div>
+    <div class="input-group">
+        <input type="text" id="msgInput" class="form-control rounded-pill" placeholder="Type a message...">
+        <button id="sendBtn" class="btn btn-primary rounded-pill">Send</button>
+    </div>
+    <script>
+        google.charts.load('current', {
+            packages: ['corechart']
+        });
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            // Dynamic user list
+            const users = ["Shahar Yar", "Azhar", "Muneeb Khan", "Naeem Khan", "Ali", "Sara"];
+            const tasks = [6, 4, 7, 5, 3, 8]; // Must match users length
+
+            const data = new google.visualization.DataTable();
+            data.addColumn('string', 'User');
+            data.addColumn('number', 'Tasks');
+
+            for (let i = 0; i < users.length; i++) {
+                data.addRow([users[i], tasks[i]]);
+            }
+
+            const options = {
+                title: 'User Task Contributions',
+                chartArea: {
+                    width: '70%'
+                },
+                hAxis: {
+                    title: 'Tasks',
+                    minValue: 0
+                },
+                vAxis: {
+                    title: 'Users'
+                },
+                legend: {
+                    position: 'none'
+                }
+            };
+
+            const chart = new google.visualization.BarChart(document.getElementById('google_chart'));
+            chart.draw(data, options);
+        }
+
+
+        const chatBody = document.getElementById('chatBody');
+
+        function appendMessage(user, text, type) {
+            const msgDiv = document.createElement('div');
+            msgDiv.classList.add('message', type);
+            msgDiv.innerHTML = `<strong>${user}:</strong> ${text}`;
+            chatBody.appendChild(msgDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        document.getElementById('sendBtn').addEventListener('click', () => {
+            const text = document.getElementById('msgInput').value.trim();
+            if (!text) return;
+
+            appendMessage("You", text, 'sent');
+            document.getElementById('msgInput').value = '';
+
+            // Simulated AJAX reply from a random user
+            setTimeout(() => {
+                const users = ["Shahar Yar", "Azhar", "Muneeb Khan", "Naeem Khan", "Ali", "Sara"];
+                const randomUser = users[Math.floor(Math.random() * users.length)];
+                appendMessage(randomUser, "Replying to your message", 'received');
+            }, 1000);
+        });
+
+        // Send on Enter key
+        document.getElementById('msgInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('sendBtn').click();
+                e.preventDefault();
+            }
+        });
+    </script>
 @endsection

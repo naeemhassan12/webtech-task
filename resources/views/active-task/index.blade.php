@@ -31,11 +31,13 @@
             </div>
             <div class="d-flex align-items-start ms-3">
 
-                <button class="btn btn-primary d-flex align-items-center gap-2 shadow-sm px-4 py-2 rounded-3"
-                    data-bs-toggle="modal" data-bs-target="#memberManageModal">
-                    <i data-lucide="plus" style="width: 18px;"></i>
-                    <span>Member Manage</span>
-                </button>
+                @if (auth()->user()->role === 'admin' || auth()->user()->role === 'superadmin')
+                    <button class="btn btn-primary d-flex align-items-center gap-2 shadow-sm px-4 py-2 rounded-3"
+                        data-bs-toggle="modal" data-bs-target="#memberManageModal">
+                        <i data-lucide="plus" style="width: 18px;"></i>
+                        <span>Member Manage</span>
+                    </button>
+                @endif
             </div>
 
         </div>
@@ -76,8 +78,7 @@
                                         <td class="text-end">
                                             <button
                                                 class="btn btn-sm {{ $isAdded ? 'btn-outline-danger' : 'btn-outline-success' }} member-btn"
-                                                data-user-id="{{ $user->id }}"
-                                                data-user-name="{{ $user->name }}"
+                                                data-user-id="{{ $user->id }}" data-user-name="{{ $user->name }}"
                                                 data-task-id="{{ $activeTasks->id }}"
                                                 data-added="{{ $isAdded ? '1' : '0' }}">
                                                 {{ $isAdded ? 'Remove' : 'Add' }}
@@ -95,6 +96,8 @@
             </div>
         </div>
     </div>
+
+
     <script>
         document.addEventListener('click', function(e) {
             if (!e.target.classList.contains('member-btn')) return;
@@ -108,84 +111,87 @@
             // Disable button during request
             btn.disabled = true;
 
-            const url = isAdded
-                ? `/active/${taskId}/remove-member/${userId}`
-                : `/active/${taskId}/add-member/${userId}`;
+            const url = isAdded ?
+                `/active/${taskId}/remove-member/${userId}` :
+                `/active/${taskId}/add-member/${userId}`;
 
             const method = isAdded ? 'DELETE' : 'POST';
 
             fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const container = document.getElementById('task-members-container');
-                    
-                    if (isAdded) {
-                        // REMOVE UI update
-                        btn.className = 'btn btn-sm btn-outline-success member-btn';
-                        btn.innerText = 'Add';
-                        btn.dataset.added = '0';
-                        
-                        // Remove from background list
-                        const memberSpan = container.querySelector(`.member-item[data-id="${userId}"]`);
-                        if (memberSpan) {
-                            // Check if next sibling is a separator and remove it
-                            if (memberSpan.nextElementSibling && memberSpan.nextElementSibling.classList.contains('separator')) {
-                                memberSpan.nextElementSibling.remove();
-                            } else if (memberSpan.previousElementSibling && memberSpan.previousElementSibling.classList.contains('separator')) {
-                                // Or if it was the last one, remove previous separator
-                                memberSpan.previousElementSibling.remove();
-                            }
-                            memberSpan.remove();
-                        }
-                        
-                        if (container.children.length === 0) {
-                            container.innerHTML = '<span class="text-muted no-members">No members assigned</span>';
-                        }
-
-                        showToast(data.message || `${userName} removed successfully`, 'danger');
-                    } else {
-                        // ADD UI update
-                        btn.className = 'btn btn-sm btn-outline-danger member-btn';
-                        btn.innerText = 'Remove';
-                        btn.dataset.added = '1';
-                        
-                        // Add to background list
-                        const noMembersParams = container.querySelector('.no-members');
-                        if (noMembersParams) noMembersParams.remove();
-                        
-                        if (container.children.length > 0) {
-                            const separator = document.createElement('span');
-                            separator.className = 'text-muted separator';
-                            separator.innerText = '.';
-                            container.appendChild(separator);
-                        }
-                        
-                        const newMember = document.createElement('span');
-                        newMember.className = 'member-item';
-                        newMember.dataset.id = userId;
-                        newMember.innerText = userName;
-                        container.appendChild(newMember);
-
-                        showToast(data.message || `${userName} added successfully`);
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     }
-                } else {
-                    showToast('Action failed', 'danger');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showToast('Something went wrong', 'danger');
-            })
-            .finally(() => {
-                btn.disabled = false;
-            });
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const container = document.getElementById('task-members-container');
+
+                        if (isAdded) {
+                            // REMOVE UI update
+                            btn.className = 'btn btn-sm btn-outline-success member-btn';
+                            btn.innerText = 'Add';
+                            btn.dataset.added = '0';
+
+                            // Remove from background list
+                            const memberSpan = container.querySelector(`.member-item[data-id="${userId}"]`);
+                            if (memberSpan) {
+                                // Check if next sibling is a separator and remove it
+                                if (memberSpan.nextElementSibling && memberSpan.nextElementSibling.classList
+                                    .contains('separator')) {
+                                    memberSpan.nextElementSibling.remove();
+                                } else if (memberSpan.previousElementSibling && memberSpan
+                                    .previousElementSibling.classList.contains('separator')) {
+                                    // Or if it was the last one, remove previous separator
+                                    memberSpan.previousElementSibling.remove();
+                                }
+                                memberSpan.remove();
+                            }
+
+                            if (container.children.length === 0) {
+                                container.innerHTML =
+                                    '<span class="text-muted no-members">No members assigned</span>';
+                            }
+
+                            showToast(data.message || `${userName} removed successfully`, 'danger');
+                        } else {
+                            // ADD UI update
+                            btn.className = 'btn btn-sm btn-outline-danger member-btn';
+                            btn.innerText = 'Remove';
+                            btn.dataset.added = '1';
+
+                            // Add to background list
+                            const noMembersParams = container.querySelector('.no-members');
+                            if (noMembersParams) noMembersParams.remove();
+
+                            if (container.children.length > 0) {
+                                const separator = document.createElement('span');
+                                separator.className = 'text-muted separator';
+                                separator.innerText = '.';
+                                container.appendChild(separator);
+                            }
+
+                            const newMember = document.createElement('span');
+                            newMember.className = 'member-item';
+                            newMember.dataset.id = userId;
+                            newMember.innerText = userName;
+                            container.appendChild(newMember);
+
+                            showToast(data.message || `${userName} added successfully`);
+                        }
+                    } else {
+                        showToast('Action failed', 'danger');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Something went wrong', 'danger');
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                });
         });
 
         // Toast
@@ -200,5 +206,10 @@
             setTimeout(() => toast.remove(), 2000);
         }
     </script>
-    
+
+    {{-- chart boxing  --}}
+
+
+
+   
 @endsection

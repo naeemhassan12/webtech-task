@@ -1,18 +1,18 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use App\Models\User;
-
+use Illuminate\Support\Facades\Auth;
 class UserController extends Controller
 {
     public function create()
     {
-        
+
         $roles = config('roles');
         $users = User::all();
         return view('user.index', get_defined_vars());
-
     }
 
 
@@ -73,12 +73,23 @@ class UserController extends Controller
     }
 
     public function destroy($id)
-{
-    $user = User::findOrFail($id);
-    $user->delete();
+    {
+        $user = User::findOrFail($id);
+        $user->delete();
 
-    return response()->json([
-        'message' => 'User deleted successfully!'
-    ]);
+        return response()->json([
+            'message' => 'User deleted successfully!'
+        ]);
+    }
+
+    public function logout(Request $request)
+{
+    Auth::logout();
+
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect()->route('login'); // make sure login route exists
 }
+
 }

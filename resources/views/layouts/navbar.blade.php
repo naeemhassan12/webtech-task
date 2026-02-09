@@ -7,7 +7,7 @@
 
         <!-- Brand (Mobile only) -->
         <a class="navbar-brand fw-bold text-primary d-md-none" href="#">WebTech</a>
-        
+
         <!-- Search Bar (Desktop) -->
         <div class="d-none d-md-flex align-items-center flex-grow-1 max-w-md ms-3">
             <div class="input-group">
@@ -15,7 +15,7 @@
                 <input type="text" class="form-control bg-light border-start-0 border-light border-0 shadow-none" placeholder="Search anything..." style="font-size: 0.9rem;">
             </div>
         </div>
-        
+
         <!-- Profile Dropdown -->
         <div class="ms-auto d-flex align-items-center">
             <div class="dropdown">
@@ -34,7 +34,14 @@
                     <li><a class="dropdown-item py-2 d-flex align-items-center" href="#"><i data-lucide="user" class="me-2 text-muted" style="width: 16px;"></i>Profile</a></li>
                     <li><a class="dropdown-item py-2 d-flex align-items-center" href="#"><i data-lucide="settings" class="me-2 text-muted" style="width: 16px;"></i>Settings</a></li>
                     <li><hr class="dropdown-divider opacity-50"></li>
-                    <li><a class="dropdown-item py-2 d-flex align-items-center text-danger" href="#"><i data-lucide="log-out" class="me-2" style="width: 16px;"></i>Logout</a></li>
+                    <li>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="dropdown-item py-2 d-flex align-items-center text-danger border-0 bg-transparent w-100">
+                                <i data-lucide="log-out" class="me-2" style="width: 16px;"></i>Logout
+                            </button>
+                        </form>
+                    </li>
                 </ul>
             </div>
         </div>

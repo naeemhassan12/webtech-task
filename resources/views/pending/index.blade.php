@@ -29,11 +29,13 @@
                 </div>
             </div>
             <div class="d-flex align-items-start ms-3">
+                @if(auth()->user()->role === 'admin' || auth()->user()->role === 'superadmin')
                 <button class="btn btn-primary d-flex align-items-center gap-2 shadow-sm px-4 py-2 rounded-3"
                     data-bs-toggle="modal" data-bs-target="#memberManageModal">
                     <i data-lucide="plus" style="width: 18px;"></i>
                     <span>Member Manage</span>
                 </button>
+                @endif
             </div>
         </div>
     </div>

@@ -65,8 +65,8 @@
         <div class="container">
             <a class="navbar-brand fw-bold text-primary fs-3" href="#">WebTech</a>
             <div class="ms-auto">
-                <a href="{{ route('dashboard.create') }}" class="btn btn-outline-primary fw-semibold px-4 rounded-3 me-2">Login</a>
-                <a href="{{ route('dashboard.create') }}" class="btn btn-primary fw-semibold rounded-3">Get Started</a>
+                <a href="{{ route('dashboard') }}" class="btn btn-outline-primary fw-semibold px-4 rounded-3 me-2">Login</a>
+                <a href="{{ route('dashboard') }}" class="btn btn-primary fw-semibold rounded-3">Get Started</a>
             </div>
         </div>
     </nav>
@@ -76,7 +76,7 @@
             <h1 class="display-3 fw-bold mb-4">Streamline Your <span class="text-primary">Workflow</span></h1>
             <p class="lead text-muted mb-5 max-w-2xl mx-auto">WebTech provides the ultimate dashboard experience for managing employees, clients, and projects with precision and ease.</p>
             <div class="d-flex justify-content-center gap-3">
-                <a href="{{ route('dashboard.create') }}" class="btn btn-primary btn-lg px-5">Go to Dashboard</a>
+                <a href="{{ route('dashboard') }}" class="btn btn-primary btn-lg px-5">Go to Dashboard</a>
                 <a href="{{ route('user.create') }}" class="btn btn-light btn-lg px-5 border shadow-sm">View Tasks</a>
             </div>
         </div>

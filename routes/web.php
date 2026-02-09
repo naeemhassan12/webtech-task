@@ -24,13 +24,11 @@ Route::get('/active/{id}/manage', [ActiveTaskController::class, 'showUsersModal'
 Route::post('/active/{taskId}/add-member/{userId}', [ActiveTaskController::class, 'addMember'])->name('active.addMember');
 Route::delete('/active/{taskId}/remove-member/{userId}', [ActiveTaskController::class, 'removeMember'])->name('active.removeMember');
 
-//Route::get('/pending/{id}',[PendingTaskController::class, 'index'])->name('pending.index');
 Route::get('/task/{id}', [TaskController::class, 'show'])
     ->name('task.show');
 
-Route::get('/dashboard', [DashboardController::class, 'create'])->name('dashboard.create');
+Route::get('/dashboard', [DashboardController::class, 'create'])->name('dashboard');
 
-// Route::resource('user', UserController::class);
 // route users table
 Route::get('/user', [UserController::class, 'create'])->name('user.create');
 Route::get('/user/create', [UserController::class, 'create'])->name('user.create');
@@ -39,7 +37,6 @@ Route::get('/user/index', [UserController::class, 'index'])->name('user.index');
 Route::get('/user/{id}/edit', [UserController::class, 'edit'])->name('user.edit');
 Route::put('/user/update/{id}', [UserController::class, 'update'])->name('user.update');
 Route::delete('/user/delete/{id}', [UserController::class, 'destroy'])->name('user.delete');
-//Route::delete('/user/delete/{id}', [UserController::class, 'destroy']);
 
 // routes task tables
 Route::get('/task', [TaskController::class, 'create'])->name('tasks.create');
@@ -52,18 +49,14 @@ Route::delete('/tasks/{id}', [TaskController::class, 'destroy'])->name('tasks.de
 Route::get('/sidebar/updates', [TaskController::class, 'getSidebarUpdates'])->name('sidebar.updates');
 
 
- Route::get('/',function(){
-     return view('welcome');
- });
+Route::get('/', function () {
+    return auth()->check() ? redirect()->route('dashboard') : view('welcome');
+})->name('home');
 
-Route::get('/', [DashboardController::class, 'create'])
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
 
 require __DIR__.'/auth.php';

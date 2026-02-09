@@ -91,8 +91,10 @@
             </div>
         </div>
     </div>
-    <script>
-        document.addEventListener('click', function(e) {
+    <script type="module">
+        import { addUserTaskToFirebase, removeUserTaskFromFirebase } from '/js/firebase-config.js';
+
+        document.addEventListener('click', async function(e) {
             if (!e.target.classList.contains('member-btn')) return;
 
             const btn = e.target;
@@ -110,19 +112,28 @@
 
             const method = isAdded ? 'DELETE' : 'POST';
 
-            fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                });
+
+                const data = await response.json();
+
                 if (data.success) {
                     const container = document.getElementById('pending-task-members-container');
                     
+                    // Get task details for Firebase
+                    const taskTitle = '{{ $pendingtasks->task_title ?? "" }}';
+                    const clientName = '{{ $pendingtasks->client_name ?? "" }}';
+                    
                     if (isAdded) {
+                        // REMOVE from Firebase
+                        await removeUserTaskFromFirebase(userId, userName, taskId, 'pending');
+
                         // REMOVE UI update
                         btn.className = 'btn btn-sm btn-outline-success member-btn';
                         btn.innerText = 'Add';
@@ -145,6 +156,9 @@
 
                         showToast(data.message || `${userName} removed successfully`, 'danger');
                     } else {
+                        // ADD to Firebase
+                        await addUserTaskToFirebase(userId, userName, taskId, 'pending', taskTitle, clientName);
+
                         // ADD UI update
                         btn.className = 'btn btn-sm btn-outline-danger member-btn';
                         btn.innerText = 'Remove';
@@ -172,14 +186,12 @@
                 } else {
                     showToast('Action failed', 'danger');
                 }
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Error:', error);
                 showToast('Something went wrong', 'danger');
-            })
-            .finally(() => {
+            } finally {
                 btn.disabled = false;
-            });
+            }
         });
 
         // Toast

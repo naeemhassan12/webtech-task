@@ -98,8 +98,10 @@
     </div>
 
 
-    <script>
-        document.addEventListener('click', function(e) {
+    <script type="module">
+        import { addUserTaskToFirebase, removeUserTaskFromFirebase } from '/js/firebase-config.js';
+
+        document.addEventListener('click', async function(e) {
             if (!e.target.classList.contains('member-btn')) return;
 
             const btn = e.target;
@@ -117,81 +119,91 @@
 
             const method = isAdded ? 'DELETE' : 'POST';
 
-            fetch(url, {
+            try {
+                const response = await fetch(url, {
                     method: method,
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const container = document.getElementById('task-members-container');
-
-                        if (isAdded) {
-                            // REMOVE UI update
-                            btn.className = 'btn btn-sm btn-outline-success member-btn';
-                            btn.innerText = 'Add';
-                            btn.dataset.added = '0';
-
-                            // Remove from background list
-                            const memberSpan = container.querySelector(`.member-item[data-id="${userId}"]`);
-                            if (memberSpan) {
-                                // Check if next sibling is a separator and remove it
-                                if (memberSpan.nextElementSibling && memberSpan.nextElementSibling.classList
-                                    .contains('separator')) {
-                                    memberSpan.nextElementSibling.remove();
-                                } else if (memberSpan.previousElementSibling && memberSpan
-                                    .previousElementSibling.classList.contains('separator')) {
-                                    // Or if it was the last one, remove previous separator
-                                    memberSpan.previousElementSibling.remove();
-                                }
-                                memberSpan.remove();
-                            }
-
-                            if (container.children.length === 0) {
-                                container.innerHTML =
-                                    '<span class="text-muted no-members">No members assigned</span>';
-                            }
-
-                            showToast(data.message || `${userName} removed successfully`, 'danger');
-                        } else {
-                            // ADD UI update
-                            btn.className = 'btn btn-sm btn-outline-danger member-btn';
-                            btn.innerText = 'Remove';
-                            btn.dataset.added = '1';
-
-                            // Add to background list
-                            const noMembersParams = container.querySelector('.no-members');
-                            if (noMembersParams) noMembersParams.remove();
-
-                            if (container.children.length > 0) {
-                                const separator = document.createElement('span');
-                                separator.className = 'text-muted separator';
-                                separator.innerText = '.';
-                                container.appendChild(separator);
-                            }
-
-                            const newMember = document.createElement('span');
-                            newMember.className = 'member-item';
-                            newMember.dataset.id = userId;
-                            newMember.innerText = userName;
-                            container.appendChild(newMember);
-
-                            showToast(data.message || `${userName} added successfully`);
-                        }
-                    } else {
-                        showToast('Action failed', 'danger');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('Something went wrong', 'danger');
-                })
-                .finally(() => {
-                    btn.disabled = false;
                 });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const container = document.getElementById('task-members-container');
+                    
+                    // Get task details for Firebase
+                    const taskTitle = '{{ $activeTasks->task_title ?? "" }}';
+                    const clientName = '{{ $activeTasks->client_name ?? "" }}';
+
+                    if (isAdded) {
+                        // REMOVE from Firebase
+                        await removeUserTaskFromFirebase(userId, userName, taskId, 'active');
+
+                        // REMOVE UI update
+                        btn.className = 'btn btn-sm btn-outline-success member-btn';
+                        btn.innerText = 'Add';
+                        btn.dataset.added = '0';
+
+                        // Remove from background list
+                        const memberSpan = container.querySelector(`.member-item[data-id="${userId}"]`);
+                        if (memberSpan) {
+                            // Check if next sibling is a separator and remove it
+                            if (memberSpan.nextElementSibling && memberSpan.nextElementSibling.classList
+                                .contains('separator')) {
+                                memberSpan.nextElementSibling.remove();
+                            } else if (memberSpan.previousElementSibling && memberSpan
+                                .previousElementSibling.classList.contains('separator')) {
+                                // Or if it was the last one, remove previous separator
+                                memberSpan.previousElementSibling.remove();
+                            }
+                            memberSpan.remove();
+                        }
+
+                        if (container.children.length === 0) {
+                            container.innerHTML =
+                                '<span class="text-muted no-members">No members assigned</span>';
+                        }
+
+                        showToast(data.message || `${userName} removed successfully`, 'danger');
+                    } else {
+                        // ADD to Firebase
+                        await addUserTaskToFirebase(userId, userName, taskId, 'active', taskTitle, clientName);
+
+                        // ADD UI update
+                        btn.className = 'btn btn-sm btn-outline-danger member-btn';
+                        btn.innerText = 'Remove';
+                        btn.dataset.added = '1';
+
+                        // Add to background list
+                        const noMembersParams = container.querySelector('.no-members');
+                        if (noMembersParams) noMembersParams.remove();
+
+                        if (container.children.length > 0) {
+                            const separator = document.createElement('span');
+                            separator.className = 'text-muted separator';
+                            separator.innerText = '.';
+                            container.appendChild(separator);
+                        }
+
+                        const newMember = document.createElement('span');
+                        newMember.className = 'member-item';
+                        newMember.dataset.id = userId;
+                        newMember.innerText = userName;
+                        container.appendChild(newMember);
+
+                        showToast(data.message || `${userName} added successfully`);
+                    }
+                } else {
+                    showToast('Action failed', 'danger');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Something went wrong', 'danger');
+            } finally {
+                btn.disabled = false;
+            }
         });
 
         // Toast
@@ -207,13 +219,10 @@
         }
     </script>
 
-    {{-- chart boxing  --}}
 
 
 
-
-    <!-- Google Charts -->
-    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    {{-- Chat Interface --}}
 
     <style>
         body {
@@ -286,78 +295,105 @@
         <input type="text" id="msgInput" class="form-control rounded-pill" placeholder="Type a message...">
         <button id="sendBtn" class="btn btn-primary rounded-pill">Send</button>
     </div>
-    <script>
-        google.charts.load('current', {
-            packages: ['corechart']
-        });
-        google.charts.setOnLoadCallback(drawChart);
 
-        function drawChart() {
-            // Dynamic user list
-            const users = ["Shahar Yar", "Azhar", "Muneeb Khan", "Naeem Khan", "Ali", "Sara"];
-            const tasks = [6, 4, 7, 5, 3, 8]; // Must match users length
-
-            const data = new google.visualization.DataTable();
-            data.addColumn('string', 'User');
-            data.addColumn('number', 'Tasks');
-
-            for (let i = 0; i < users.length; i++) {
-                data.addRow([users[i], tasks[i]]);
-            }
-
-            const options = {
-                title: 'User Task Contributions',
-                chartArea: {
-                    width: '70%'
-                },
-                hAxis: {
-                    title: 'Tasks',
-                    minValue: 0
-                },
-                vAxis: {
-                    title: 'Users'
-                },
-                legend: {
-                    position: 'none'
-                }
-            };
-
-            const chart = new google.visualization.BarChart(document.getElementById('google_chart'));
-            chart.draw(data, options);
-        }
-
+    <script type="module">
+        import { sendChatMessage, listenToChatMessages } from '/js/firebase-config.js';
 
         const chatBody = document.getElementById('chatBody');
+        const taskId = '{{ $activeTasks->id ?? "" }}';
+        const currentUserId = '{{ auth()->user()->id ?? "" }}';
+        const currentUserName = '{{ auth()->user()->name ?? "Guest" }}';
 
-        function appendMessage(user, text, type) {
+        // Store displayed message IDs to prevent duplicates
+        let displayedMessages = new Set();
+
+        function appendMessage(messageData) {
+            // Prevent duplicate messages
+            if (displayedMessages.has(messageData.messageId)) {
+                return;
+            }
+            displayedMessages.add(messageData.messageId);
+
             const msgDiv = document.createElement('div');
-            msgDiv.classList.add('message', type);
-            msgDiv.innerHTML = `<strong>${user}:</strong> ${text}`;
+            const isCurrentUser = messageData.userId == currentUserId;
+            msgDiv.classList.add('message', isCurrentUser ? 'sent' : 'received');
+            
+            // Format timestamp
+            const timestamp = new Date(messageData.timestamp);
+            const timeString = timestamp.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            msgDiv.innerHTML = `
+                <div style="display: flex; flex-direction: column;">
+                    <div><strong>${messageData.userName}:</strong> ${escapeHtml(messageData.message)}</div>
+                    <div style="font-size: 0.75rem; color: #888; margin-top: 2px;">${timeString}</div>
+                </div>
+            `;
+            
             chatBody.appendChild(msgDiv);
             chatBody.scrollTop = chatBody.scrollHeight;
         }
 
-        document.getElementById('sendBtn').addEventListener('click', () => {
-            const text = document.getElementById('msgInput').value.trim();
-            if (!text) return;
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
 
-            appendMessage("You", text, 'sent');
+        function clearChat() {
+            chatBody.innerHTML = '';
+            displayedMessages.clear();
+        }
+
+        // Listen to real-time messages from Firebase
+        if (taskId) {
+            listenToChatMessages(taskId, (messages) => {
+                clearChat();
+                messages.forEach(msg => appendMessage(msg));
+            });
+        }
+
+        // Send message
+        async function sendMessage() {
+            const text = document.getElementById('msgInput').value.trim();
+            if (!text || !taskId) return;
+
+            // Clear input immediately for better UX
             document.getElementById('msgInput').value = '';
 
-            // Simulated AJAX reply from a random user
-            setTimeout(() => {
-                const users = ["Shahar Yar", "Azhar", "Muneeb Khan", "Naeem Khan", "Ali", "Sara"];
-                const randomUser = users[Math.floor(Math.random() * users.length)];
-                appendMessage(randomUser, "Replying to your message", 'received');
-            }, 1000);
-        });
+            // Send to Firebase
+            const success = await sendChatMessage(taskId, currentUserId, currentUserName, text);
+            
+            if (!success) {
+                // Show error toast if sending failed
+                showToast('Failed to send message', 'danger');
+                // Restore message in input
+                document.getElementById('msgInput').value = text;
+            }
+        }
+
+        document.getElementById('sendBtn').addEventListener('click', sendMessage);
 
         // Send on Enter key
         document.getElementById('msgInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
-                document.getElementById('sendBtn').click();
+                sendMessage();
                 e.preventDefault();
             }
         });
+
+        // Toast notification function
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type} position-fixed top-0 end-0 m-3 shadow`;
+            toast.style.zIndex = 1055;
+            toast.innerText = message;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.remove(), 2000);
+        }
     </script>
 @endsection

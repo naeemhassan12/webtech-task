@@ -29,22 +29,21 @@
                 </div>
             </div>
             <div class="d-flex align-items-start ms-3">
-                @if(auth()->user()->role === 'admin' || auth()->user()->role === 'superadmin')
-                <button class="btn btn-primary d-flex align-items-center gap-2 shadow-sm px-4 py-2 rounded-3"
-                    data-bs-toggle="modal" data-bs-target="#memberManageModal">
-                    <i data-lucide="plus" style="width: 18px;"></i>
-                    <span>Member Manage</span>
-                </button>
+                @if (auth()->user()->role === 'admin' || auth()->user()->role === 'superadmin')
+                    <button class="btn btn-primary d-flex align-items-center gap-2 shadow-sm px-4 py-2 rounded-3"
+                        data-bs-toggle="modal" data-bs-target="#memberManageModal">
+                        <i data-lucide="plus" style="width: 18px;"></i>
+                        <span>Member Manage</span>
+                    </button>
                 @endif
             </div>
         </div>
     </div>
-    {{-- model  --}}
 
+    {{-- model  --}}
     <div class="modal fade" id="memberManageModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content border-0 shadow">
-
                 <!-- Modal Header -->
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold">Member Management</h5>
@@ -72,8 +71,7 @@
                                         <td class="text-end">
                                             <button
                                                 class="btn btn-sm {{ $isAdded ? 'btn-outline-danger' : 'btn-outline-success' }} member-btn"
-                                                data-user-id="{{ $user->id }}"
-                                                data-user-name="{{ $user->name }}"
+                                                data-user-id="{{ $user->id }}" data-user-name="{{ $user->name }}"
                                                 data-task-id="{{ $pendingtasks->id }}"
                                                 data-added="{{ $isAdded ? '1' : '0' }}">
                                                 {{ $isAdded ? 'Remove' : 'Add' }}
@@ -92,7 +90,10 @@
         </div>
     </div>
     <script type="module">
-        import { addUserTaskToFirebase, removeUserTaskFromFirebase } from '/js/firebase-config.js';
+        import {
+            addUserTaskToFirebase,
+            removeUserTaskFromFirebase
+        } from '/js/firebase-config.js';
 
         document.addEventListener('click', async function(e) {
             if (!e.target.classList.contains('member-btn')) return;
@@ -106,9 +107,9 @@
             // Disable button during request
             btn.disabled = true;
 
-            const url = isAdded
-                ? `/pending/${taskId}/remove-member/${userId}`
-                : `/pending/${taskId}/add-member/${userId}`;
+            const url = isAdded ?
+                `/pending/${taskId}/remove-member/${userId}` :
+                `/pending/${taskId}/add-member/${userId}`;
 
             const method = isAdded ? 'DELETE' : 'POST';
 
@@ -125,11 +126,11 @@
 
                 if (data.success) {
                     const container = document.getElementById('pending-task-members-container');
-                    
+
                     // Get task details for Firebase
-                    const taskTitle = '{{ $pendingtasks->task_title ?? "" }}';
-                    const clientName = '{{ $pendingtasks->client_name ?? "" }}';
-                    
+                    const taskTitle = '{{ $pendingtasks->task_title ?? '' }}';
+                    const clientName = '{{ $pendingtasks->client_name ?? '' }}';
+
                     if (isAdded) {
                         // REMOVE from Firebase
                         await removeUserTaskFromFirebase(userId, userName, taskId, 'pending');
@@ -138,20 +139,23 @@
                         btn.className = 'btn btn-sm btn-outline-success member-btn';
                         btn.innerText = 'Add';
                         btn.dataset.added = '0';
-                        
+
                         // Remove from background list
                         const memberSpan = container.querySelector(`.member-item[data-id="${userId}"]`);
                         if (memberSpan) {
-                            if (memberSpan.nextElementSibling && memberSpan.nextElementSibling.classList.contains('separator')) {
+                            if (memberSpan.nextElementSibling && memberSpan.nextElementSibling.classList
+                                .contains('separator')) {
                                 memberSpan.nextElementSibling.remove();
-                            } else if (memberSpan.previousElementSibling && memberSpan.previousElementSibling.classList.contains('separator')) {
+                            } else if (memberSpan.previousElementSibling && memberSpan.previousElementSibling
+                                .classList.contains('separator')) {
                                 memberSpan.previousElementSibling.remove();
                             }
                             memberSpan.remove();
                         }
-                        
+
                         if (container.children.length === 0) {
-                            container.innerHTML = '<span class="text-muted no-members">No members assigned</span>';
+                            container.innerHTML =
+                                '<span class="text-muted no-members">No members assigned</span>';
                         }
 
                         showToast(data.message || `${userName} removed successfully`, 'danger');
@@ -163,18 +167,18 @@
                         btn.className = 'btn btn-sm btn-outline-danger member-btn';
                         btn.innerText = 'Remove';
                         btn.dataset.added = '1';
-                        
+
                         // Add to background list
                         const noMembersParams = container.querySelector('.no-members');
                         if (noMembersParams) noMembersParams.remove();
-                        
+
                         if (container.children.length > 0) {
                             const separator = document.createElement('span');
                             separator.className = 'text-muted separator';
                             separator.innerText = '.';
                             container.appendChild(separator);
                         }
-                        
+
                         const newMember = document.createElement('span');
                         newMember.className = 'member-item';
                         newMember.dataset.id = userId;
@@ -206,5 +210,4 @@
             setTimeout(() => toast.remove(), 2000);
         }
     </script>
-
 @endsection

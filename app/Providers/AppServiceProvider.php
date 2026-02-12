@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Schema;
 use App\Models\Task;
 
+
+
 class AppServiceProvider extends ServiceProvider
 {
     public function boot()
@@ -16,10 +18,10 @@ class AppServiceProvider extends ServiceProvider
             View::composer('*', function ($view) {
                 $pendingTasks = collect([]);
                 $activeTask = collect([]);
-                
+
                 if (auth()->check()) {
                     $user = auth()->user();
-                    
+
                     // Superadmin and admin see all tasks
                     if (in_array($user->role, ['superadmin', 'admin'])) {
                         $pendingTasks = Task::where('status', 0)->get();
@@ -31,7 +33,7 @@ class AppServiceProvider extends ServiceProvider
                                 $query->where('user_id', $user->id);
                             })
                             ->get();
-                        
+
                         $activeTask = Task::where('status', 1)
                             ->whereHas('users', function ($query) use ($user) {
                                 $query->where('user_id', $user->id);
@@ -39,11 +41,13 @@ class AppServiceProvider extends ServiceProvider
                             ->get();
                     }
                 }
-                
+
                 $view->with('pendingTasks', $pendingTasks);
                 $view->with('activeTask', $activeTask);
             });
         }
     }
+
+
 }
 

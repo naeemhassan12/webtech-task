@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Providers\AppServiceProvider;
 
 
 class TaskController extends Controller

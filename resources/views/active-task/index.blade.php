@@ -41,12 +41,9 @@
             </div>
 
         </div>
-
-
     </div>
 
     {{-- model  --}}
-
     <div class="modal fade" id="memberManageModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content border-0 shadow">
@@ -97,9 +94,11 @@
         </div>
     </div>
 
-
     <script type="module">
-        import { addUserTaskToFirebase, removeUserTaskFromFirebase } from '/js/firebase-config.js';
+        import {
+            addUserTaskToFirebase,
+            removeUserTaskFromFirebase
+        } from '/js/firebase-config.js';
 
         document.addEventListener('click', async function(e) {
             if (!e.target.classList.contains('member-btn')) return;
@@ -132,10 +131,10 @@
 
                 if (data.success) {
                     const container = document.getElementById('task-members-container');
-                    
+
                     // Get task details for Firebase
-                    const taskTitle = '{{ $activeTasks->task_title ?? "" }}';
-                    const clientName = '{{ $activeTasks->client_name ?? "" }}';
+                    const taskTitle = '{{ $activeTasks->task_title ?? '' }}';
+                    const clientName = '{{ $activeTasks->client_name ?? '' }}';
 
                     if (isAdded) {
                         // REMOVE from Firebase
@@ -219,11 +218,7 @@
         }
     </script>
 
-
-
-
     {{-- Chat Interface --}}
-
     <style>
         body {
             background: #e5ddd5;
@@ -284,10 +279,9 @@
         }
     </style>
 
-
     <div class="chat-card shadow">
         <div class="chat-header">
-             <strong>dashboard3</strong> | Client: <strong>mobin</strong>
+            <strong>dashboard</strong> | Client: <strong>mobin</strong>
         </div>
         <div class="chat-body" id="chatBody"></div>
     </div>
@@ -296,13 +290,20 @@
         <button id="sendBtn" class="btn btn-primary rounded-pill">Send</button>
     </div>
 
-    <script type="module">
-        import { sendChatMessage, listenToChatMessages } from '/js/firebase-config.js';
+    <audio id="notifSound">
+        <source src="/sounds/notification.mp3" type="audio/mpeg">
+    </audio>
+
+    {{-- <script type="module">
+        import {
+            sendChatMessage,
+            listenToChatMessages
+        } from '/js/firebase-config.js';
 
         const chatBody = document.getElementById('chatBody');
-        const taskId = '{{ $activeTasks->id ?? "" }}';
-        const currentUserId = '{{ auth()->user()->id ?? "" }}';
-        const currentUserName = '{{ auth()->user()->name ?? "Guest" }}';
+        const taskId = '{{ $activeTasks->id ?? '' }}';
+        const currentUserId = '{{ auth()->user()->id ?? '' }}';
+        const currentUserName = '{{ auth()->user()->name ?? 'Guest' }}';
 
         // Store displayed message IDs to prevent duplicates
         let displayedMessages = new Set();
@@ -317,21 +318,21 @@
             const msgDiv = document.createElement('div');
             const isCurrentUser = messageData.userId == currentUserId;
             msgDiv.classList.add('message', isCurrentUser ? 'sent' : 'received');
-            
+
             // Format timestamp
             const timestamp = new Date(messageData.timestamp);
-            const timeString = timestamp.toLocaleTimeString('en-US', { 
-                hour: '2-digit', 
-                minute: '2-digit' 
+            const timeString = timestamp.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit'
             });
-            
+
             msgDiv.innerHTML = `
                 <div style="display: flex; flex-direction: column;">
                     <div><strong>${messageData.userName}:</strong> ${escapeHtml(messageData.message)}</div>
                     <div style="font-size: 0.75rem; color: #888; margin-top: 2px;">${timeString}</div>
                 </div>
             `;
-            
+
             chatBody.appendChild(msgDiv);
             chatBody.scrollTop = chatBody.scrollHeight;
         }
@@ -354,7 +355,6 @@
                 messages.forEach(msg => appendMessage(msg));
             });
         }
-
         // Send message
         async function sendMessage() {
             const text = document.getElementById('msgInput').value.trim();
@@ -365,7 +365,7 @@
 
             // Send to Firebase
             const success = await sendChatMessage(taskId, currentUserId, currentUserName, text);
-            
+
             if (!success) {
                 // Show error toast if sending failed
                 showToast('Failed to send message', 'danger');
@@ -395,5 +395,284 @@
 
             setTimeout(() => toast.remove(), 2000);
         }
+    </script> --}}
+    <script type="module">
+        import {
+            sendChatMessage,
+            listenToChatMessages
+        } from '/js/firebase-config.js';
+
+        const chatBody = document.getElementById('chatBody');
+        const taskId = '{{ $activeTasks->id ?? '' }}';
+        const currentUserId = '{{ auth()->user()->id ?? '' }}';
+        const currentUserName = '{{ auth()->user()->name ?? 'Guest' }}';
+
+        let displayedMessages = new Set();
+        let lastMessageTime = null;
+
+        function appendMessage(messageData) {
+            if (displayedMessages.has(messageData.messageId)) return;
+            displayedMessages.add(messageData.messageId);
+
+            const msgDiv = document.createElement('div');
+            const isCurrentUser = messageData.userId == currentUserId;
+            msgDiv.classList.add('message', isCurrentUser ? 'sent' : 'received');
+
+            const timestamp = new Date(messageData.timestamp);
+            const timeString = timestamp.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            msgDiv.innerHTML = `
+            <div style="display:flex;flex-direction:column;">
+                <div><strong>${messageData.userName}:</strong> ${escapeHtml(messageData.message)}</div>
+                <div style="font-size:0.75rem;color:#888;margin-top:2px;">${timeString}</div>
+            </div>
+        `;
+
+            chatBody.appendChild(msgDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function clearChat() {
+            chatBody.innerHTML = '';
+            displayedMessages.clear();
+        }
+
+        // 🔔 Ask browser permission once
+        if (Notification.permission !== "granted") {
+            Notification.requestPermission();
+        }
+
+        // 🔥 Firebase Listener + Notification Logic
+        if (taskId) {
+            listenToChatMessages(taskId, (messages) => {
+                clearChat();
+
+                messages.forEach(msg => {
+                    appendMessage(msg);
+
+                    // 🔔 Notify only receiver
+                    if (msg.userId != currentUserId) {
+                        if (!lastMessageTime || msg.timestamp > lastMessageTime) {
+                            showChatNotification(msg.userName, msg.message);
+                            lastMessageTime = msg.timestamp;
+                        }
+                    }
+                });
+            });
+        }
+
+        // 🚀 Send Message
+        async function sendMessage() {
+            const input = document.getElementById('msgInput');
+            const text = input.value.trim();
+            if (!text || !taskId) return;
+
+            input.value = '';
+
+            const success = await sendChatMessage(
+                taskId,
+                currentUserId,
+                currentUserName,
+                text
+            );
+
+            if (!success) {
+                showToast('Failed to send message', 'danger');
+                input.value = text;
+            }
+        }
+
+        document.getElementById('sendBtn').addEventListener('click', sendMessage);
+
+        document.getElementById('msgInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+                e.preventDefault();
+            }
+        });
+
+        // 🔔 Notification Function
+        function showChatNotification(sender, message) {
+
+            // 🔊 Sound alert
+            const sound = document.getElementById('notifSound');
+            if (sound) sound.play();
+
+            // 🔔 Toast popup
+            showToast(`New message from ${sender}: ${message}`, 'primary');
+
+            // 🖥 Browser push notification
+            if (Notification.permission === "granted") {
+                new Notification("New Message", {
+                    body: message,
+                    icon: "/logo.png"
+                });
+            }
+        }
+
+        // Toast function
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type} position-fixed top-0 end-0 m-3 shadow`;
+            toast.style.zIndex = 1055;
+            toast.innerText = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2500);
+        }
     </script>
+    {{-- <script type="module">
+        import {
+            sendChatMessage,
+            listenToChatMessages
+        } from '/js/firebase-config.js';
+
+        const chatBody = document.getElementById('chatBody');
+        const taskId = '{{ $activeTasks->id ?? '' }}';
+        const currentUserId = '{{ auth()->user()->id ?? '' }}';
+        const currentUserName = '{{ auth()->user()->name ?? 'Guest' }}';
+
+        let displayedMessages = new Set();
+
+        // 👀 Last seen timestamp (localStorage based)
+        let lastSeen = localStorage.getItem('lastSeen_' + taskId) || 0;
+
+        function appendMessage(messageData) {
+            if (displayedMessages.has(messageData.messageId)) return;
+            displayedMessages.add(messageData.messageId);
+
+            const msgDiv = document.createElement('div');
+            const isCurrentUser = messageData.userId == currentUserId;
+            msgDiv.classList.add('message', isCurrentUser ? 'sent' : 'received');
+
+            const timestamp = new Date(messageData.timestamp);
+            const timeString = timestamp.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            msgDiv.innerHTML = `
+            <div style="display:flex;flex-direction:column;">
+                <div><strong>${messageData.userName}:</strong> ${escapeHtml(messageData.message)}</div>
+                <div style="font-size:0.75rem;color:#888;margin-top:2px;">${timeString}</div>
+            </div>
+        `;
+
+            chatBody.appendChild(msgDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function clearChat() {
+            chatBody.innerHTML = '';
+            displayedMessages.clear();
+        }
+
+        // 🔔 Browser permission
+        if (Notification.permission !== "granted") {
+            Notification.requestPermission();
+        }
+
+        // 🔥 Firebase Listener + SEEN-based Notification
+        if (taskId) {
+            listenToChatMessages(taskId, (messages) => {
+                clearChat();
+
+                messages.forEach(msg => {
+                    appendMessage(msg);
+
+                    // 🔔 Sirf new + unseen messages par notification
+                    if (
+                        msg.userId != currentUserId &&
+                        msg.timestamp > lastSeen
+                    ) {
+                        showChatNotification(msg.userName, msg.message);
+                    }
+                });
+
+                // 👀 Mark as SEEN (store last timestamp)
+                if (messages.length > 0) {
+                    const latest = messages[messages.length - 1].timestamp;
+                    localStorage.setItem('lastSeen_' + taskId, latest);
+                    lastSeen = latest;
+                }
+            });
+        }
+
+        // 🚀 Send Message
+        async function sendMessage() {
+            const input = document.getElementById('msgInput');
+            const text = input.value.trim();
+            if (!text || !taskId) return;
+
+            input.value = '';
+
+            const success = await sendChatMessage(
+                taskId,
+                currentUserId,
+                currentUserName,
+                text
+            );
+
+            if (!success) {
+                showToast('Failed to send message', 'danger');
+                input.value = text;
+            }
+        }
+
+        document.getElementById('sendBtn').addEventListener('click', sendMessage);
+
+        document.getElementById('msgInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+                e.preventDefault();
+            }
+        });
+
+        // 🔔 Notification Function
+        function showChatNotification(sender, message) {
+
+            // 🔊 Sound
+            const sound = document.getElementById('notifSound');
+            if (sound) sound.play();
+
+            // 🔔 Toast
+            showToast(`New message from ${sender}: ${message}`, 'primary');
+
+            // 🖥 Browser push
+            if (Notification.permission === "granted") {
+                new Notification("New Message", {
+                    body: message,
+                    icon: "/logo.png"
+                });
+            }
+        }
+
+        // 🍞 Toast function
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type} position-fixed top-0 end-0 m-3 shadow`;
+            toast.style.zIndex = 1055;
+            toast.innerText = message;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.remove(), 2500);
+        }
+    </script> --}}
+
+   
 @endsection

@@ -802,11 +802,21 @@
 
         /* ========== MESSAGE STYLES WITH DYNAMIC WIDTH ========== */
         .message-wrapper-pro {
+            display: flex;
+            flex-direction: column;
             margin-bottom: 4px;
             opacity: 0;
             transform: translateY(10px) scale(0.95);
             transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             width: 100%;
+        }
+
+        .message-wrapper-pro.sent {
+            align-items: flex-end;
+        }
+
+        .message-wrapper-pro.received {
+            align-items: flex-start;
         }
 
         .message-wrapper-pro.message-appear-pro {
@@ -815,21 +825,22 @@
         }
 
         .message-container-pro {
-            display: inline-flex;
-            gap: 8px;
+            display: flex;
+            gap: 10px;
             align-items: flex-end;
-            max-width: 75%;
-            min-width: 120px;
+            max-width: 80%;
+            min-width: 140px;
             width: fit-content;
+            position: relative;
         }
 
         .message-container-pro.message-sent-pro {
             margin-left: auto;
-            flex-direction: row-reverse;
         }
 
         .message-container-pro.message-received-pro {
             margin-right: auto;
+            flex-direction: row;
         }
 
         .message-avatar-pro {

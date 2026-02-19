@@ -11,6 +11,7 @@ use App\Http\Controllers\showUsersModal;
 use App\Http\Controllers\addMember;
 use App\Http\Controllers\removeMember;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 
 Route::get('/pending/{id}', [PendingTaskController::class, 'showUsersModal'])->name('pending.index');
@@ -50,7 +51,7 @@ Route::get('/sidebar/updates', [TaskController::class, 'getSidebarUpdates'])->na
 
 
 Route::get('/', function () {
-    return auth()->check() ? redirect()->route('dashboard') : view('welcome');
+    return Auth::check() ? redirect()->route('dashboard') : view('welcome');
 })->name('home');
 
 Route::middleware('auth')->group(function () {

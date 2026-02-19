@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use App\Models\Task;
 use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
@@ -13,11 +14,11 @@ class TaskController extends Controller
     public function create()
     {
         // Check if user is authenticated
-        if (!auth()->check()) {
+        if (!Auth::check()) {
             return redirect()->route('login');
         }
 
-        $user = auth()->user();
+        $user = Auth::user();
 
         // Superadmin and admin see all tasks
         if (in_array($user->role, ['superadmin', 'admin'])) {
@@ -102,13 +103,13 @@ class TaskController extends Controller
     public function getSidebarUpdates()
     {
         // Check if user is authenticated
-        if (!auth()->check()) {
+        if (!Auth::check()) {
             return response()->json([
                 'error' => 'Unauthenticated'
             ], 401);
         }
 
-        $user = auth()->user();
+        $user = Auth::user();
 
         // Superadmin and admin see all tasks
         if (in_array($user->role, ['superadmin', 'admin'])) {
